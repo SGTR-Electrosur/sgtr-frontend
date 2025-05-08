@@ -1,0 +1,136 @@
+﻿@model List<TRElectrosur.Models.User>
+@{
+    ViewData["Title"] = "Gestión de Usuarios";
+}
+
+<div class="container-fluid px-0">
+    <!-- Cabecera de la página -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">Gestión de Usuarios</h1>
+            <p class="mb-0 text-muted">Administración de usuarios del sistema</p>
+        </div>
+        <a href="@Url.Action("Crear", "Usuarios")" class="btn btn-primary d-flex align-items-center">
+            <i class="fas fa-user-plus me-2"></i>
+            Nuevo Usuario
+        </a>
+    </div>
+
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger mb-4">
+            @ViewBag.ErrorMessage
+        </div>
+    }
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success mb-4">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger mb-4">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <!-- Tabla de usuarios -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center bg-white">
+            <h6 class="m-0 font-weight-bold text-primary">Listado de Usuarios</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="tablaUsuarios" width="100%" cellspacing="0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre Completo</th>
+                            <th>Correo</th>
+                            <th>Área</th>
+                            <th>Tipo de Usuario</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var user in Model)
+                            {
+                                <tr>
+                                    <td>@user.UserID</td>
+                                    <td>@(user.FirstName + " " + user.LastName)</td>
+                                    <td>@user.Email</td>
+                                    <td>
+                                        @{
+                                            string areaName = "No asignada";
+                                            if (user.AreaID.HasValue)
+                                            {
+                                                bool areaFound = false;
+                                                foreach (var area in ViewBag.Areas)
+                                                {
+                                                    if (area.AreaID == user.AreaID.Value)
+                                                    {
+                                                        areaName = area.AreaName;
+                                                        areaFound = true;
+                                                        break;
+                                                    }
+                                                }
+
+                                                if (!areaFound)
+                                                {
+                                                    areaName = $"Área {user.AreaID}";
+                                                }
+                                            }
+                                            @areaName
+                                        }
+                                    </td>
+                                    <td>@(user.RoleID == 1 ? "Administrador" : "Usuario")</td>
+                                    <td>
+                                        @if (user.IsActive)
+                                        {
+                                            <span class="badge bg-success rounded-pill">Activo</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger rounded-pill">Inactivo</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("Editar", "Usuarios", new { id = user.UserID })" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center">No hay usuarios disponibles</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Verificar si la tabla ya está inicializada como DataTable
+            if (!$.fn.DataTable.isDataTable('#tablaUsuarios')) {
+                // Inicialización de DataTables solo si no está ya inicializada
+                $('#tablaUsuarios').DataTable({
+                    language: dataTablesSpanish,
+                    responsive: true
+                });
+            }
+        });
+    </script>
+}

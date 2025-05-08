@@ -1,0 +1,160 @@
+﻿@{
+    ViewData["Title"] = "Crear Nuevo Usuario";
+}
+
+<div class="container-fluid px-0">
+    <!-- Cabecera de la página -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">Crear Nuevo Usuario</h1>
+            <p class="mb-0 text-muted">Complete la información para registrar un nuevo usuario en el sistema</p>
+        </div>
+        <a href="@Url.Action("Index", "Usuarios")" class="btn btn-outline-secondary d-flex align-items-center">
+            <i class="fas fa-arrow-left me-2"></i>
+            Volver al listado
+        </a>
+    </div>
+
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger mb-4">
+            @ViewBag.ErrorMessage
+        </div>
+    }
+
+    <!-- Formulario de nuevo usuario -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 bg-white">
+            <h6 class="m-0 font-weight-bold text-primary">Información del Usuario</h6>
+        </div>
+        <div class="card-body">
+            <form id="formCrearUsuario" method="post" action="@Url.Action("Crear", "Usuarios")">
+                <!-- Información personal -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h5 class="text-gray-700 border-bottom pb-2 mb-3">Datos Personales</h5>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="firstName" class="form-label">Nombres <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="firstName" name="firstName" required maxlength="100">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="lastName" class="form-label">Apellidos <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="lastName" name="lastName" required maxlength="100">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label">Correo Electrónico <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" id="email" name="email" required maxlength="150">
+                        <div class="form-text">Ej. usuario@electrosur.com.pe</div>
+                    </div>
+                </div>
+
+                <!-- Información de cuenta -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h5 class="text-gray-700 border-bottom pb-2 mb-3">Datos de Cuenta</h5>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="roleId" class="form-label">Tipo de Usuario <span class="text-danger">*</span></label>
+                        <select class="form-select" id="roleId" name="roleId" required>
+                            <option value="">Seleccione...</option>
+                            <option value="1">Administrador</option>
+                            <option value="2">Usuario</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="areaId" class="form-label">Área <span class="text-danger">*</span></label>
+                        <select class="form-select" id="areaId" name="areaId" required>
+                            <option value="">Seleccione...</option>
+                            @foreach (var area in ViewBag.Areas)
+                            {
+                                <option value="@area.AreaID">@area.AreaName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="password" class="form-label">Contraseña <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="password" name="password" required minlength="8" maxlength="25">
+                            <button class="btn btn-outline-secondary toggle-password" type="button">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="form-text">Mínimo 8 caracteres, incluya mayúsculas, minúsculas y números</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="confirmarContrasena" class="form-label">Confirmar Contraseña <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="confirmarContrasena" required minlength="8" maxlength="25">
+                            <button class="btn btn-outline-secondary toggle-password" type="button">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuración adicional -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h5 class="text-gray-700 border-bottom pb-2 mb-3">Configuración Adicional</h5>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="isActive" name="isActive" checked>
+                            <label class="form-check-label" for="isActive">Usuario Activo</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="row mt-4">
+                    <div class="col d-flex justify-content-end gap-2">
+                        <a href="@Url.Action("Index", "Usuarios")" class="btn btn-outline-secondary">
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Guardar Usuario
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Mostrar/ocultar contraseña
+            $('.toggle-password').on('click', function () {
+                const passwordField = $(this).siblings('input');
+                const passwordFieldType = passwordField.attr('type');
+                const newType = passwordFieldType === 'password' ? 'text' : 'password';
+
+                // Cambiar el tipo de campo
+                passwordField.attr('type', newType);
+
+                // Cambiar el icono
+                const icon = $(this).find('i');
+                if (newType === 'text') {
+                    icon.removeClass('fa-eye').addClass('fa-eye-slash');
+                } else {
+                    icon.removeClass('fa-eye-slash').addClass('fa-eye');
+                }
+            });
+
+            // Validación del formulario
+            $('#formCrearUsuario').on('submit', function (e) {
+                // Verificar que las contraseñas coincidan
+                const password = $('#password').val();
+                const confirmarContrasena = $('#confirmarContrasena').val();
+
+                if (password !== confirmarContrasena) {
+                    e.preventDefault();
+                    alert('Las contraseñas no coinciden');
+                    return false;
+                }
+            });
+        });
+    </script>
+}

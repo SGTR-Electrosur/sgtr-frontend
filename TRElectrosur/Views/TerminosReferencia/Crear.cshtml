@@ -1,0 +1,766 @@
+﻿@{
+    ViewData["Title"] = "Crear Término de Referencia";
+
+    // Datos de ejemplo para el tipo de TDR seleccionado (vendrá del controlador)
+    var tipoTDR = new
+    {
+        Id = 2,
+        Nombre = "Servicios Generales"
+    };
+}
+
+<div class="container-fluid px-0">
+    <!-- Cabecera de la página -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">Crear Término de Referencia</h1>
+            <p class="mb-0 text-muted">Tipo: <span class="fw-bold">@tipoTDR.Nombre</span></p>
+        </div>
+        <a href="@Url.Action("Index", "TerminosReferencia")" class="btn btn-outline-secondary d-flex align-items-center">
+            <i class="fas fa-arrow-left me-2"></i>
+            Volver al listado
+        </a>
+    </div>
+
+    <!-- Formulario principal -->
+    <form id="formCrearTDR" method="post" action="@Url.Action("Create", "TerminosReferencia")">
+        <input type="hidden" name="tipoTDRId" value="@tipoTDR.Id" />
+
+        <!-- Pestañas de navegación -->
+        <ul class="nav nav-tabs mb-4" id="tdrTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="info-general-tab" data-bs-toggle="tab" data-bs-target="#info-general" type="button" role="tab" aria-controls="info-general" aria-selected="true" style="color: #2a3c7d;">
+                    <i class="fas fa-info-circle me-1"></i> Información General
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="alcances-tab" data-bs-toggle="tab" data-bs-target="#alcances" type="button" role="tab" aria-controls="alcances" aria-selected="false" style="color: #495057;">
+                    <i class="fas fa-tasks me-1"></i> Alcances
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="requisitos-tab" data-bs-toggle="tab" data-bs-target="#requisitos" type="button" role="tab" aria-controls="requisitos" aria-selected="false" style="color: #495057;">
+                    <i class="fas fa-clipboard-check me-1"></i> Requisitos
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="entregables-tab" data-bs-toggle="tab" data-bs-target="#entregables" type="button" role="tab" aria-controls="entregables" aria-selected="false" style="color: #495057;">
+                    <i class="fas fa-box me-1"></i> Plazos y Entregables
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="condiciones-tab" data-bs-toggle="tab" data-bs-target="#condiciones" type="button" role="tab" aria-controls="condiciones" aria-selected="false" style="color: #495057;">
+                    <i class="fas fa-file-contract me-1"></i> Condiciones
+                </button>
+            </li>
+        </ul>
+
+        <!-- Contenido de las pestañas -->
+        <div class="tab-content" id="tdrTabsContent">
+            <!-- 1. Información General -->
+            <div class="tab-pane fade show active" id="info-general" role="tabpanel" aria-labelledby="info-general-tab">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">Información General</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="organismo" class="form-label">1. Organismo <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="organismo" name="organismo" value="EMPRESA REGIONAL DE SERVICIO PUBLICO DE ELECTRICIDAD – ELECTROSUR S.A." readonly>
+                                <div class="form-text">La entidad que convoca el presente requerimiento con domicilio legal en la Calle Zela n°408 – TACNA.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="organoUnidadOrganica" class="form-label">2. Órgano y/o Unidad Orgánica <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="organoUnidadOrganica" name="organoUnidadOrganica" required placeholder="Ingrese el órgano y/o unidad orgánica responsable del requerimiento">
+                                <div class="form-text">Indicar el órgano y/o unidad orgánica responsable del requerimiento.</div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="actividadPOI" class="form-label">3. Actividad del POI/ Acción Estratégica PEI <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="actividadPOI" name="actividadPOI" required placeholder="Ingrese el código y denominación de la actividad POI">
+                                <div class="form-text">Indicar el código y la denominación de la actividad POI conforme a la programación multianual de contrataciones.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="denominacionContratacion" class="form-label">4. Denominación de la Contratación <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="denominacionContratacion" name="denominacionContratacion" required placeholder="Ingrese la denominación del requerimiento de contratación">
+                                <div class="form-text">Indicar la denominación del requerimiento de contratación.</div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="finalidadPublica" class="form-label">5. Finalidad Pública <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="finalidadPublica" name="finalidadPublica" rows="4" required placeholder="Ingrese la finalidad pública de la contratación"></textarea>
+                                <div class="form-text">Indicar qué se busca satisfacer, mejorar y/o atender con la contratación requerida.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="objetivoContratacion" class="form-label">6. Objetivo de la Contratación <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="objetivoContratacion" name="objetivoContratacion" rows="4" required placeholder="Ingrese el objetivo de la contratación"></textarea>
+                                <div class="form-text">Indicar cuál es el objetivo que permita conocer al proveedor qué beneficios se pretenden obtener.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Alcances -->
+            <div class="tab-pane fade" id="alcances" role="tabpanel" aria-labelledby="alcances-tab">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">7. Alcances del Servicio</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Detalle las actividades a desarrollar, procedimientos a seguir, plan de trabajo, recursos a ser provistos por el proveedor y por la entidad para la ejecución del servicio. En los casos que corresponda, indique si la prestación principal conlleva a la ejecución de prestaciones accesorias.
+                                </div>
+
+                                <div id="editorAlcances">
+                                    <!-- Editor WYSIWYG para Alcances -->
+                                </div>
+                                <textarea id="alcancesServicio" name="alcancesServicio" class="d-none" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">9. Reglamentos Técnicos, Normas y Otros</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Señale reglamentos técnicos, normas metrológicas y/o sanitarias, reglamentos y demás normas que regulan el objeto de la contratación con carácter obligatorio.
+                                </div>
+
+                                <div id="editorReglamentos">
+                                    <!-- Editor WYSIWYG para Reglamentos -->
+                                </div>
+                                <textarea id="reglamentosTecnicos" name="reglamentosTecnicos" class="d-none"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">10. Seguros</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    De ser el caso, precise el tipo de seguro que se exige al proveedor, la cobertura, el plazo, monto de cobertura y oportunidad de su presentación.
+                                </div>
+
+                                <div id="editorSeguros">
+                                    <!-- Editor WYSIWYG para Seguros -->
+                                </div>
+                                <textarea id="seguros" name="seguros" class="d-none"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">11. Prestaciones Accesorias</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    De ser el caso, incluya las prestaciones accesorias que se consideren necesarias.
+                                </div>
+
+                                <div id="editorPrestacionesAccesorias">
+                                    <!-- Editor WYSIWYG para Prestaciones Accesorias -->
+                                </div>
+                                <textarea id="prestacionesAccesorias" name="prestacionesAccesorias" class="d-none"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Requisitos -->
+            <div class="tab-pane fade" id="requisitos" role="tabpanel" aria-labelledby="requisitos-tab">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">8. Requisitos del Proveedor</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Especifique los requisitos que debe cumplir el proveedor.
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="rucActivo" name="rucActivo" checked disabled>
+                                            <label class="form-check-label" for="rucActivo">
+                                                RUC activo y habido
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="rnp" name="rnp" value="1">
+                                            <label class="form-check-label" for="rnp">
+                                                Registro Nacional de Proveedores (requerido si el monto supera 1 UIT)
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h6 class="fw-bold mt-4 mb-3">8.1. Experiencia del Proveedor</h6>
+                                <div class="row mb-4">
+                                    <div class="col-md-12">
+                                        <div class="form-check mb-3">
+                                            <input class="form-check-input" type="radio" name="tipoExperiencia" id="experienciaMontoFacturado" value="A" checked>
+                                            <label class="form-check-label" for="experienciaMontoFacturado">
+                                                Alternativa A: Monto facturado acumulado equivalente
+                                            </label>
+                                        </div>
+                                        <div class="ms-4 mb-3">
+                                            <div class="input-group">
+                                                <span class="input-group-text">S/</span>
+                                                <input type="number" class="form-control" id="montoFacturado" name="montoFacturado" placeholder="Monto facturado" value="0">
+                                            </div>
+                                            <div class="form-text">Consignar el monto de facturación expresado en números en la moneda del requerimiento.</div>
+                                        </div>
+
+                                        <div class="form-check mb-3">
+                                            <input class="form-check-input" type="radio" name="tipoExperiencia" id="experienciaCantidadServicios" value="B">
+                                            <label class="form-check-label" for="experienciaCantidadServicios">
+                                                Alternativa B: Cantidad de servicios
+                                            </label>
+                                        </div>
+                                        <div class="ms-4 mb-3">
+                                            <input type="number" class="form-control" id="cantidadServicios" name="cantidadServicios" placeholder="Cantidad de servicios" value="0">
+                                            <div class="form-text">Indicar la cantidad de servicios requeridos.</div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="serviciosSimilares" class="form-label">Servicios similares</label>
+                                            <textarea class="form-control" id="serviciosSimilares" name="serviciosSimilares" rows="3" placeholder="Especifique los servicios similares al objeto de contratación"></textarea>
+                                            <div class="form-text">Consigne los servicios similares al objeto de la contratación.</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h6 class="fw-bold mt-4 mb-3">8.2. Perfil del Personal</h6>
+                                <div id="editorPerfilPersonal">
+                                    <!-- Editor WYSIWYG para Perfil del Personal -->
+                                </div>
+                                <textarea id="perfilPersonal" name="perfilPersonal" class="d-none"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Plazos y Entregables -->
+            <div class="tab-pane fade" id="entregables" role="tabpanel" aria-labelledby="entregables-tab">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">12. Lugar y Plazo de Ejecución</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="lugarEjecucion" class="form-label">12.1. Lugar <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="lugarEjecucion" name="lugarEjecucion" required placeholder="Especifique distrito, provincia y región">
+                                <div class="form-text">Señalar el lugar donde se efectuará la prestación del servicio.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="plazoEjecucion" class="form-label">12.2. Plazo <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="plazoEjecucion" name="plazoEjecucion" required min="1" placeholder="Plazo en días calendario">
+                                    <span class="input-group-text">días calendario</span>
+                                </div>
+                                <div class="form-text">Definir el plazo máximo en días calendario.</div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="inicioEjecucion" class="form-label">Inicio de ejecución <span class="text-danger">*</span></label>
+                                <select class="form-select" id="inicioEjecucion" name="inicioEjecucion" required>
+                                    <option value="">Seleccione...</option>
+                                    <option value="1">A partir del día siguiente de notificado el pedido de compra</option>
+                                    <option value="2">A partir del día siguiente de la firma del contrato</option>
+                                    <option value="3">A partir de la fecha específica</option>
+                                    <option value="4">Otro (especificar)</option>
+                                </select>
+                                <div id="inicioEjecucionOtro" class="mt-2 d-none">
+                                    <input type="text" class="form-control" id="inicioEjecucionDetalle" name="inicioEjecucionDetalle" placeholder="Especifique el inicio de ejecución">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">13. Entregables</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="tipoEntregable" class="form-label">Forma de presentación <span class="text-danger">*</span></label>
+                                <select class="form-select" id="tipoEntregable" name="tipoEntregable" required>
+                                    <option value="">Seleccione...</option>
+                                    <option value="1">Informe único</option>
+                                    <option value="2">Informe mensual</option>
+                                    <option value="3">Por entregables</option>
+                                </select>
+                                <div class="form-text">Definir la forma de presentación del informe.</div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="detalleEntregables" class="form-label">Detalle de entregables</label>
+                                <div id="editorDetalleEntregables">
+                                    <!-- Editor WYSIWYG para Detalle de Entregables -->
+                                </div>
+                                <textarea id="detalleEntregables" name="detalleEntregables" class="d-none"></textarea>
+                                <div class="form-text">Especificar el número de entregables, porcentaje, plazo y descripción de cada uno.</div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <label for="presentacionEntregables" class="form-label">13.1. Plazo y lugar de presentación de entregables</label>
+                                <div class="form-text mb-2">Una vez culminado el plazo de ejecución establecido por entregable, el contratista tendrá un plazo máximo de dos (02) días hábiles siguientes para su presentación.</div>
+                                <select class="form-select" id="presentacionEntregables" name="presentacionEntregables">
+                                    <option value="1">Mesa de Partes Presencial de ELECTROSUR S.A.</option>
+                                    <option value="2">Mesa de Partes Virtual de ELECTROSUR S.A.</option>
+                                    <option value="3">Correo Electrónico de ELECTROSUR S.A.</option>
+                                    <option value="4">Mesa de Partes Presencial o Virtual o Correo Electrónico de ELECTROSUR S.A.</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">14. Conformidad</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="responsableConformidad" class="form-label">Responsable de la conformidad <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="responsableConformidad" name="responsableConformidad" required placeholder="Consignar el cargo y órgano y/o unidad orgánica responsable">
+                                <div class="form-text">La conformidad se otorgará en un plazo máximo de siete (07) días calendario.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Condiciones -->
+            <div class="tab-pane fade" id="condiciones" role="tabpanel" aria-labelledby="condiciones-tab">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">15. Sistema de Contratación</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="sistemaContratacion" class="form-label">Sistema de contratación <span class="text-danger">*</span></label>
+                                <select class="form-select" id="sistemaContratacion" name="sistemaContratacion" required>
+                                    <option value="">Seleccione...</option>
+                                    <option value="1">A suma alzada</option>
+                                    <option value="2">A precios unitarios</option>
+                                </select>
+                                <div class="form-text">Precisar el sistema de contratación.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">16. Forma y Condiciones de Pago</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="formaPago" class="form-label">Forma de pago <span class="text-danger">*</span></label>
+                                <select class="form-select" id="formaPago" name="formaPago" required>
+                                    <option value="">Seleccione...</option>
+                                    <option value="1">Pago único</option>
+                                    <option value="2">Pago mensual</option>
+                                    <option value="3">Pago por entregables</option>
+                                </select>
+                                <div class="form-text">Expresar la forma de pago.</div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info mt-3" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>
+                            El pago se realizará con abono en la cuenta "Código de Cuenta Interbancaria" (CCI) del contratista, como plazo máximo de diez (10) días hábiles luego de otorgada la conformidad del servicio.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">18. Responsabilidad del Proveedor</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="plazoResponsabilidad" class="form-label">Plazo de responsabilidad (años) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="plazoResponsabilidad" name="plazoResponsabilidad" required min="1" value="1">
+                                <div class="form-text">El proveedor es responsable por la calidad ofrecida y por los vicios ocultos del servicio ofertado por un plazo no menor a 1 año.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">20. Penalidades Aplicables</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <div class="alert alert-warning" role="alert">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <strong>20.1. Penalidad por mora:</strong> En caso de retraso injustificado del contratista en la ejecución de las prestaciones objeto del contrato, la entidad contratante le aplica automáticamente una penalidad por mora por cada día de atraso.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <h6 class="fw-bold mb-3">20.2. Otras penalidades</h6>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="incluyeOtrasPenalidades" name="incluyeOtrasPenalidades" value="1">
+                                    <label class="form-check-label" for="incluyeOtrasPenalidades">
+                                        Incluir otras penalidades
+                                    </label>
+                                </div>
+
+                                <div id="seccionOtrasPenalidades" class="mt-3 d-none">
+                                    <div id="editorOtrasPenalidades">
+                                        <!-- Editor WYSIWYG para Otras Penalidades -->
+                                    </div>
+                                    <textarea id="otrasPenalidades" name="otrasPenalidades" class="d-none"></textarea>
+                                    <div class="form-text">Las penalidades deben ser objetivas, razonables y proporcionales con el objeto de la contratación.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 bg-white">
+                            <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">24. Medidas de Seguridad en la Prestación de Servicio</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="medidasSeguridad" class="form-label">Nivel de riesgo <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="medidasSeguridad" name="medidasSeguridad" required>
+                                        <option value="">Seleccione...</option>
+                                        <option value="1">Alto riesgo</option>
+                                        <option value="2">Bajo riesgo</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 bg-white">
+                            <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">32. Otros</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <label for="otrosDetalles" class="form-label">Observaciones adicionales</label>
+                                    <div id="editorOtrosDetalles">
+                                        <!-- Editor WYSIWYG para Otros Detalles -->
+                                    </div>
+                                    <textarea id="otrosDetalles" name="otrosDetalles" class="d-none"></textarea>
+                                    <div class="form-text">Ingrese cualquier información adicional relevante para el término de referencia.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-outline-secondary" id="btnAnterior" disabled>
+                    <i class="fas fa-arrow-left me-1"></i> Anterior
+                </button>
+
+                <div>
+                    <button type="button" class="btn btn-outline-secondary me-2" onclick="location.href='@Url.Action("Index", "TerminosReferencia")'">
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn btn-info me-2" id="btnVerDatos">
+                        <i class="fas fa-eye me-1"></i> Ver Datos a Enviar
+                    </button>
+                    <button type="submit" class="btn btn-primary" style="background-color: #2a3c7d; border-color: #2a3c7d;" id="btnGuardar">
+                        <i class="fas fa-save me-1"></i> Guardar TDR
+                    </button>
+                </div>
+
+                <button type="button" class="btn btn-outline-primary" id="btnSiguiente" style="color: #2a3c7d; border-color: #2a3c7d;">
+                    Siguiente <i class="fas fa-arrow-right ms-1"></i>
+                </button>
+            </div>
+    </form>
+
+    <!-- Modal para mostrar datos del formulario -->
+    <div class="modal fade" id="modalVerDatos" tabindex="-1" aria-labelledby="modalVerDatosLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #2a3c7d; color: white;">
+                    <h5 class="modal-title" id="modalVerDatosLabel">Datos del Formulario</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Esta ventana muestra cómo se enviarán los datos del formulario. El contenido HTML de los editores se guarda como texto formateado.
+                    </div>
+                    <pre id="datosFormulario" class="p-3 bg-light" style="max-height: 500px; overflow: auto;"></pre>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- CKEditor 5 -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/37.1.0/classic/ckeditor.js"></script>
+
+    <script>
+        // Variables para los editores
+        let editores = {};
+        let tabActual = 0;
+        const tabs = ['info-general-tab', 'alcances-tab', 'requisitos-tab', 'entregables-tab', 'condiciones-tab'];
+
+        $(document).ready(function () {
+            // Inicializar CKEditor para los campos de texto enriquecido
+            inicializarEditores();
+
+            // Manejar la navegación entre pestañas con los botones anterior/siguiente
+            configurarNavegacion();
+
+            // Inicializar otros controles dinámicos
+            configurarControlesDinamicos();
+
+            // Configurar validación del formulario
+            configurarValidacionFormulario();
+
+            // Configurar visualización de datos
+            configurarVisualizacionDatos();
+        });
+
+        function inicializarEditores() {
+            // Lista de campos que necesitan editor WYSIWYG
+            const camposEditor = [
+                { id: 'alcancesServicio', selector: 'editorAlcances' },
+                { id: 'reglamentosTecnicos', selector: 'editorReglamentos' },
+                { id: 'seguros', selector: 'editorSeguros' },
+                { id: 'prestacionesAccesorias', selector: 'editorPrestacionesAccesorias' },
+                { id: 'perfilPersonal', selector: 'editorPerfilPersonal' },
+                { id: 'otrasPenalidades', selector: 'editorOtrasPenalidades' },
+                { id: 'detalleEntregables', selector: 'editorDetalleEntregables' },
+                { id: 'otrosDetalles', selector: 'editorOtrosDetalles' }
+            ];
+
+            // Inicializar cada editor
+            camposEditor.forEach(campo => {
+                ClassicEditor.create(document.getElementById(campo.selector), {
+                    toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'insertTable', 'undo', 'redo']
+                })
+                    .then(editor => {
+                        editores[campo.id] = editor;
+
+                        // Actualizar el textarea oculto al cambiar el contenido
+                        editor.model.document.on('change:data', () => {
+                            document.getElementById(campo.id).value = editor.getData();
+                        });
+                    })
+                    .catch(error => {
+                        console.error(`Error al inicializar el editor ${campo.id}:`, error);
+                    });
+            });
+        }
+
+        function configurarNavegacion() {
+            // Botones de navegación
+            $('#btnAnterior').on('click', function () {
+                if (tabActual > 0) {
+                    tabActual--;
+                    $(`#${tabs[tabActual]}`).tab('show');
+                    actualizarEstadoBotones();
+                }
+            });
+
+            $('#btnSiguiente').on('click', function () {
+                if (tabActual < tabs.length - 1) {
+                    tabActual++;
+                    $(`#${tabs[tabActual]}`).tab('show');
+                    actualizarEstadoBotones();
+                    scrollToTop();
+                }
+            });
+
+            // Al cambiar de pestaña manualmente
+            $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+                tabActual = tabs.indexOf(e.target.id);
+                actualizarEstadoBotones();
+
+                // Actualizar color de las pestañas
+                $('button[data-bs-toggle="tab"]').css('color', '#495057');
+                $(this).css('color', '#2a3c7d');
+            });
+
+            // Inicializar estado de botones
+            actualizarEstadoBotones();
+        }
+
+        function actualizarEstadoBotones() {
+            $('#btnAnterior').prop('disabled', tabActual === 0);
+            $('#btnSiguiente').prop('disabled', tabActual === tabs.length - 1);
+
+            // Cambiar texto del botón siguiente en la última pestaña
+            if (tabActual === tabs.length - 1) {
+                $('#btnSiguiente').addClass('d-none');
+            } else {
+                $('#btnSiguiente').removeClass('d-none');
+            }
+        }
+
+        function configurarControlesDinamicos() {
+            // Control de inicio de ejecución - mostrar campo de detalle si se selecciona "Otro"
+            $('#inicioEjecucion').on('change', function () {
+                const mostrarDetalle = $(this).val() === '4';
+                $('#inicioEjecucionOtro').toggleClass('d-none', !mostrarDetalle);
+                if (mostrarDetalle) {
+                    $('#inicioEjecucionDetalle').prop('required', true);
+                } else {
+                    $('#inicioEjecucionDetalle').prop('required', false);
+                }
+            });
+
+            // Control de experiencia - alternar entre monto facturado y cantidad de servicios
+            $('input[name="tipoExperiencia"]').on('change', function () {
+                const esMontoFacturado = $(this).val() === 'A';
+                $('#montoFacturado').prop('disabled', !esMontoFacturado);
+                $('#cantidadServicios').prop('disabled', esMontoFacturado);
+
+                if (esMontoFacturado) {
+                    $('#montoFacturado').prop('required', true);
+                    $('#cantidadServicios').prop('required', false);
+                } else {
+                    $('#montoFacturado').prop('required', false);
+                    $('#cantidadServicios').prop('required', true);
+                }
+            });
+
+            // Mostrar/ocultar sección de otras penalidades
+            $('#incluyeOtrasPenalidades').on('change', function () {
+                $('#seccionOtrasPenalidades').toggleClass('d-none', !this.checked);
+            });
+        }
+
+        function configurarValidacionFormulario() {
+            $('#formCrearTDR').on('submit', function (e) {
+                e.preventDefault();
+
+                // Transferir contenido de los editores a los textareas ocultos
+                for (const [id, editor] of Object.entries(editores)) {
+                    document.getElementById(id).value = editor.getData();
+                }
+
+                // Validación básica de campos requeridos
+                if (!this.checkValidity()) {
+                    e.stopPropagation();
+                    $(this).addClass('was-validated');
+                    alert('Por favor complete todos los campos obligatorios.');
+                    return false;
+                }
+
+                // Todo validado, proceder con el envío
+                alert('Formulario válido, se enviará la información.');
+                // Descomentar para enviar realmente el formulario
+                // this.submit();
+            });
+        }
+
+        function configurarVisualizacionDatos() {
+            // Botón para ver datos a enviar
+            $('#btnVerDatos').on('click', function () {
+                // Transferir contenido de los editores a los textareas ocultos
+                for (const [id, editor] of Object.entries(editores)) {
+                    document.getElementById(id).value = editor.getData();
+                }
+
+                // Obtener todos los datos del formulario
+                const formData = new FormData(document.getElementById('formCrearTDR'));
+
+                // Crear objeto con los datos
+                const datosFormulario = {};
+                for (const [key, value] of formData.entries()) {
+                    // Si es un campo HTML, formatear para mostrar su estructura
+                    if (key.includes('alcancesServicio') ||
+                        key.includes('reglamentosTecnicos') ||
+                        key.includes('seguros') ||
+                        key.includes('prestacionesAccesorias') ||
+                        key.includes('perfilPersonal') ||
+                        key.includes('otrasPenalidades') ||
+                        key.includes('detalleEntregables') ||
+                        key.includes('otrosDetalles')) {
+                        datosFormulario[key] = {
+                            tipoContenido: 'HTML',
+                            valor: value,
+                            longitudHTML: value.length,
+                        };
+                    } else {
+                        datosFormulario[key] = value;
+                    }
+                }
+
+                // Mostrar datos en el modal
+                document.getElementById('datosFormulario').textContent = JSON.stringify(datosFormulario, null, 2);
+
+                // Mostrar modal
+                const modal = new bootstrap.Modal(document.getElementById('modalVerDatos'));
+                modal.show();
+            });
+        }
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+    </script>
+}

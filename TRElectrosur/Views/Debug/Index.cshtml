@@ -1,0 +1,105 @@
+﻿@{
+    ViewData["Title"] = "Depurador de API";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4>Depurador de API</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Prueba de Login</h5>
+                    <form id="testLoginForm">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" value="admin@empresa.com">
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" value="Administrador2024!">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Probar Login</button>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <h5>Resultados</h5>
+                    <div id="results" class="p-3 bg-light rounded" style="min-height: 300px; overflow: auto;">
+                        <p class="text-muted">Los resultados de la prueba aparecerán aquí...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('testLoginForm');
+            const results = document.getElementById('results');
+
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                results.innerHTML = '<p>Enviando solicitud...</p>';
+
+                const formData = new FormData(form);
+
+                try {
+                    const response = await fetch('/Debug/TestLogin', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    let html = '<pre class="mb-3 p-2 bg-dark text-light">';
+
+                    if (data.requestPayload) {
+                        html += '<h6 class="text-warning">Solicitud:</h6>';
+                        html += JSON.stringify(JSON.parse(data.requestPayload), null, 2);
+                        html += '\n\n';
+                    }
+
+                    html += '<h6 class="text-warning">Código de estado:</h6>' +
+                        (data.statusCode || 'N/A') + '\n\n';
+
+                    if (data.responseContent) {
+                        html += '<h6 class="text-warning">Respuesta:</h6>';
+                        try {
+                            html += JSON.stringify(JSON.parse(data.responseContent), null, 2);
+                        } catch {
+                            html += data.responseContent;
+                        }
+                        html += '\n\n';
+                    }
+
+                    if (data.deserialized) {
+                        html += '<h6 class="text-warning">Deserialización:</h6>' + data.deserialized + '\n\n';
+                    }
+
+                    if (data.token) {
+                        html += '<h6 class="text-warning">Token:</h6>' + data.token + '\n\n';
+                    }
+
+                    if (data.error) {
+                        html += '<h6 class="text-danger">Error:</h6>' + data.error + '\n\n';
+
+                        if (data.stackTrace) {
+                            html += '<h6 class="text-danger">Stack Trace:</h6>' + data.stackTrace.replace(/\n/g, '<br>') + '\n\n';
+                        }
+                    }
+
+                    html += '</pre>';
+
+                    results.innerHTML = html;
+                } catch (error) {
+                    results.innerHTML = '<p class="text-danger">Error al procesar la solicitud: ' + error.message + '</p>';
+                }
+            });
+        });
+    </script>
+}

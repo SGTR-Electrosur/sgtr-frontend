@@ -1,0 +1,291 @@
+﻿@{
+    ViewData["Title"] = "Términos de Referencia";
+}
+
+<div class="container-fluid px-0">
+    <!-- Cabecera de la página -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">Términos de Referencia</h1>
+            <p class="mb-0 text-muted">Gestión de términos de referencia</p>
+        </div>
+        <button type="button" class="btn btn-primary d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#seleccionarTipoTDRModal" style="background-color: #2a3c7d; border-color: #2a3c7d;">
+            <i class="fas fa-plus-circle me-2"></i>
+            Nuevo Término de Referencia
+        </button>
+    </div>
+
+    <!-- Tabla de términos de referencia -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center bg-white">
+            <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">Listado de Términos de Referencia</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="tablaTDR" width="100%" cellspacing="0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Denominación de Contratación</th>
+                            <th>Tipo de TDR</th>
+                            <th>Área</th>
+                            <th>Fecha Envío</th>
+                            <th>Fecha Revisión</th>
+                            <th class="text-center">Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Datos de ejemplo para mostrar todos los términos de referencia -->
+                        <tr>
+                            <td>1</td>
+                            <td>Adquisición de equipos informáticos</td>
+                            <td>Adquisición de bienes</td>
+                            <td>Logística</td>
+                            <td>03/05/2025</td>
+                            <td>05/05/2025</td>
+                            <td class="text-center"><span class="badge bg-success">Finalizado</span></td>
+                            <td>
+                                <a href="/TerminosReferencia/Edit/1" class="btn btn-sm btn-primary" style="background-color: #2a3c7d; border-color: #2a3c7d;">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Consultoría para estudio de mercado</td>
+                            <td>Servicio de Consultoría</td>
+                            <td>Operaciones</td>
+                            <td>04/05/2025</td>
+                            <td>-</td>
+                            <td class="text-center"><span class="badge bg-warning text-dark">Env. Revisión</span></td>
+                            <td>
+                                <a href="/TerminosReferencia/Edit/2" class="btn btn-sm btn-primary" style="background-color: #2a3c7d; border-color: #2a3c7d;">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Servicio de limpieza de oficinas</td>
+                            <td>Servicios Generales</td>
+                            <td>Administración</td>
+                            <td>02/05/2025</td>
+                            <td>04/05/2025</td>
+                            <td class="text-center"><span class="badge bg-danger">Env. Corrección</span></td>
+                            <td>
+                                <a href="/TerminosReferencia/Edit/3" class="btn btn-sm btn-primary" style="background-color: #2a3c7d; border-color: #2a3c7d;">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Capacitación en atención al cliente</td>
+                            <td>Servicios Generales</td>
+                            <td>Finanzas</td>
+                            <td>30/04/2025</td>
+                            <td>02/05/2025</td>
+                            <td class="text-center"><span class="badge bg-success">Finalizado</span></td>
+                            <td>
+                                <a href="/TerminosReferencia/Edit/4" class="btn btn-sm btn-primary" style="background-color: #2a3c7d; border-color: #2a3c7d;">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Contratación de especialista en reclutamiento</td>
+                            <td>Locadores de Servicios</td>
+                            <td>Recursos Humanos</td>
+                            <td>05/05/2025</td>
+                            <td>-</td>
+                            <td class="text-center"><span class="badge bg-warning text-dark">Env. Revisión</span></td>
+                            <td>
+                                <a href="/TerminosReferencia/Edit/5" class="btn btn-sm btn-primary" style="background-color: #2a3c7d; border-color: #2a3c7d;">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Provisión de útiles de oficina</td>
+                            <td>Adquisición de bienes</td>
+                            <td>Logística</td>
+                            <td>01/05/2025</td>
+                            <td>03/05/2025</td>
+                            <td class="text-center"><span class="badge bg-success">Finalizado</span></td>
+                            <td>
+                                <a href="/TerminosReferencia/Edit/6" class="btn btn-sm btn-primary" style="background-color: #2a3c7d; border-color: #2a3c7d;">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>Asesoría legal tributaria</td>
+                            <td>Servicio de Consultoría</td>
+                            <td>Operaciones</td>
+                            <td>27/04/2025</td>
+                            <td>29/04/2025</td>
+                            <td class="text-center"><span class="badge bg-danger">Env. Corrección</span></td>
+                            <td>
+                                <a href="/TerminosReferencia/Edit/7" class="btn btn-sm btn-primary" style="background-color: #2a3c7d; border-color: #2a3c7d;">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>Mantenimiento de aires acondicionados</td>
+                            <td>Servicios Generales</td>
+                            <td>Administración</td>
+                            <td>28/04/2025</td>
+                            <td>30/04/2025</td>
+                            <td class="text-center"><span class="badge bg-success">Finalizado</span></td>
+                            <td>
+                                <a href="/TerminosReferencia/Edit/8" class="btn btn-sm btn-primary" style="background-color: #2a3c7d; border-color: #2a3c7d;">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para seleccionar tipo de TDR -->
+<div class="modal fade" id="seleccionarTipoTDRModal" tabindex="-1" aria-labelledby="seleccionarTipoTDRModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header text-white" style="background-color: #2a3c7d;">
+                <h5 class="modal-title" id="seleccionarTipoTDRModalLabel">Seleccione el Tipo de Término de Referencia</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4">
+                <div class="row g-4">
+                    <!-- Tarjeta: Adquisición de bienes -->
+                    <div class="col-md-6">
+                        <a href="/TerminosReferencia/Create?tipo=1" class="text-decoration-none">
+                            <div class="card h-100 shadow-sm tipo-tdr-card">
+                                <div class="card-body text-center p-4">
+                                    <div class="display-1 mb-3" style="color: #2a3c7d;">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </div>
+                                    <h5 class="card-title fw-bold">Adquisición de bienes</h5>
+                                    <p class="card-text text-muted">Para la compra de equipos, materiales y otros bienes.</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Tarjeta: Servicios Generales -->
+                    <div class="col-md-6">
+                        <a href="/TerminosReferencia/Create?tipo=2" class="text-decoration-none">
+                            <div class="card h-100 shadow-sm tipo-tdr-card">
+                                <div class="card-body text-center p-4">
+                                    <div class="display-1 mb-3" style="color: #2a3c7d;">
+                                        <i class="fas fa-cogs"></i>
+                                    </div>
+                                    <h5 class="card-title fw-bold">Servicios Generales</h5>
+                                    <p class="card-text text-muted">Para servicios diversos como mantenimiento, transporte, etc.</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Tarjeta: Servicio de Consultoría -->
+                    <div class="col-md-6">
+                        <a href="/TerminosReferencia/Create?tipo=3" class="text-decoration-none">
+                            <div class="card h-100 shadow-sm tipo-tdr-card">
+                                <div class="card-body text-center p-4">
+                                    <div class="display-1 mb-3" style="color: #2a3c7d;">
+                                        <i class="fas fa-file-alt"></i>
+                                    </div>
+                                    <h5 class="card-title fw-bold">Servicio de Consultoría</h5>
+                                    <p class="card-text text-muted">Para asesorías, estudios, investigaciones y similares.</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Tarjeta: Locadores de Servicios -->
+                    <div class="col-md-6">
+                        <a href="/TerminosReferencia/Create?tipo=4" class="text-decoration-none">
+                            <div class="card h-100 shadow-sm tipo-tdr-card">
+                                <div class="card-body text-center p-4">
+                                    <div class="display-1 mb-3" style="color: #2a3c7d;">
+                                        <i class="fas fa-user-tie"></i>
+                                    </div>
+                                    <h5 class="card-title fw-bold">Locadores de Servicios</h5>
+                                    <p class="card-text text-muted">Para la contratación de personas naturales por servicios específicos.</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estilos personalizados para las tarjetas de selección -->
+<style>
+    .tipo-tdr-card {
+        transition: all 0.3s ease;
+        border-radius: 8px;
+        cursor: pointer;
+        border: 1px solid #e0e0e0;
+    }
+
+        .tipo-tdr-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+            border-color: #2a3c7d;
+        }
+
+    .badge {
+        font-size: 0.85rem;
+        font-weight: 500;
+        padding: 0.35em 0.65em;
+    }
+
+    .btn-primary {
+        background-color: #2a3c7d;
+        border-color: #2a3c7d;
+    }
+
+        .btn-primary:hover {
+            background-color: #1f2c5d;
+            border-color: #1f2c5d;
+        }
+
+    .text-primary {
+        color: #2a3c7d !important;
+    }
+
+    .card-title{
+        color: #2a3c7d !important;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Verificar si la tabla ya está inicializada como DataTable
+            if (!$.fn.DataTable.isDataTable('#tablaTDR')) {
+                // Inicialización de DataTables
+                $('#tablaTDR').DataTable({
+                    language: dataTablesSpanish,
+                    responsive: true,
+                    order: [[4, 'desc']] // Ordenar por fecha de envío descendente
+                });
+            }
+        });
+    </script>
+}

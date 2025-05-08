@@ -1,0 +1,32 @@
+# Archivos y carpetas temporales de Visual Studio
+.vs/
+*.user
+*.suo
+
+# Binarios y resultados de compilación
+bin/
+obj/
+
+# Archivos de publicación
+publish/
+*.pubxml
+*.Publish.xml
+
+# Archivos generados por paquetes de NuGet
+packages/
+*.nupkg
+
+# Otros archivos temporales
+*.log
+*.tmp
+*.bak
+*.cache
+*.db
+
+# Configuración personal de IDEs
+*.vscode/
+*.idea/
+
+# Sistema
+Thumbs.db
+Desktop.ini
