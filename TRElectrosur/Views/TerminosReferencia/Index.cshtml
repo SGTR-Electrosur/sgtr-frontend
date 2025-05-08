@@ -62,7 +62,7 @@
                                 <tr>
                                     <td>@tdr.TDRID</td>
                                     <td>@tdr.Title</td>
-                                    <td>@tdr.TypeName</td>
+                                    <td>@tdr.TDRTypeName</td>
                                     <td>@tdr.CreatedByUserName</td>
                                     <td>@tdr.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
                                     <td>@(tdr.UpdatedAt.HasValue ? tdr.UpdatedAt.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm") : "-")</td>
@@ -92,7 +92,7 @@
                                                     break;
                                             }
                                         }
-                                        <span class="badge @badgeClass">@tdr.StateName</span>
+                                        <span class="badge @badgeClass">@tdr.CurrentStateName</span>
                                     </td>
                                     <td>
                                         @if (tdr.CurrentStateID == 5) // Si está Aprobado
