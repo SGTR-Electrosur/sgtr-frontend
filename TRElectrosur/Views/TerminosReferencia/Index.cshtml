@@ -1,5 +1,10 @@
-﻿@{
+﻿@model List<TRElectrosur.Models.TDR>
+@{
     ViewData["Title"] = "Términos de Referencia";
+
+    // Depuración para tipos de TDR
+    var tiposTDR = ViewBag.TDRTypes as List<TRElectrosur.Models.TDRType>;
+    var cantidadTipos = tiposTDR?.Count ?? 0;
 }
 
 <div class="container-fluid px-0">
@@ -15,6 +20,20 @@
         </button>
     </div>
 
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger mb-4">
+            @ViewBag.ErrorMessage
+        </div>
+    }
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success mb-4">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
     <!-- Tabla de términos de referencia -->
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center bg-white">
@@ -26,209 +45,186 @@
                     <thead class="bg-light">
                         <tr>
                             <th>ID</th>
-                            <th>Denominación de Contratación</th>
-                            <th>Tipo de TDR</th>
-                            <th>Área</th>
-                            <th>Fecha Envío</th>
-                            <th>Fecha Revisión</th>
+                            <th>Título</th>
+                            <th>Tipo</th>
+                            <th>Creado por</th>
+                            <th>Fecha Creación</th>
+                            <th>Última Actualización</th>
                             <th class="text-center">Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Datos de ejemplo para mostrar todos los términos de referencia -->
-                        <tr>
-                            <td>1</td>
-                            <td>Adquisición de equipos informáticos</td>
-                            <td>Adquisición de bienes</td>
-                            <td>Logística</td>
-                            <td>03/05/2025</td>
-                            <td>05/05/2025</td>
-                            <td class="text-center"><span class="badge bg-success">Finalizado</span></td>
-                            <td>
-                                <a href="/TerminosReferencia/Edit/1" class="btn btn-sm btn-primary" style="background-color: #2a3c7d; border-color: #2a3c7d;">
-                                    <i class="fas fa-edit"></i> Editar
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Consultoría para estudio de mercado</td>
-                            <td>Servicio de Consultoría</td>
-                            <td>Operaciones</td>
-                            <td>04/05/2025</td>
-                            <td>-</td>
-                            <td class="text-center"><span class="badge bg-warning text-dark">Env. Revisión</span></td>
-                            <td>
-                                <a href="/TerminosReferencia/Edit/2" class="btn btn-sm btn-primary" style="background-color: #2a3c7d; border-color: #2a3c7d;">
-                                    <i class="fas fa-edit"></i> Editar
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>Servicio de limpieza de oficinas</td>
-                            <td>Servicios Generales</td>
-                            <td>Administración</td>
-                            <td>02/05/2025</td>
-                            <td>04/05/2025</td>
-                            <td class="text-center"><span class="badge bg-danger">Env. Corrección</span></td>
-                            <td>
-                                <a href="/TerminosReferencia/Edit/3" class="btn btn-sm btn-primary" style="background-color: #2a3c7d; border-color: #2a3c7d;">
-                                    <i class="fas fa-edit"></i> Editar
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td>Capacitación en atención al cliente</td>
-                            <td>Servicios Generales</td>
-                            <td>Finanzas</td>
-                            <td>30/04/2025</td>
-                            <td>02/05/2025</td>
-                            <td class="text-center"><span class="badge bg-success">Finalizado</span></td>
-                            <td>
-                                <a href="/TerminosReferencia/Edit/4" class="btn btn-sm btn-primary" style="background-color: #2a3c7d; border-color: #2a3c7d;">
-                                    <i class="fas fa-edit"></i> Editar
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td>Contratación de especialista en reclutamiento</td>
-                            <td>Locadores de Servicios</td>
-                            <td>Recursos Humanos</td>
-                            <td>05/05/2025</td>
-                            <td>-</td>
-                            <td class="text-center"><span class="badge bg-warning text-dark">Env. Revisión</span></td>
-                            <td>
-                                <a href="/TerminosReferencia/Edit/5" class="btn btn-sm btn-primary" style="background-color: #2a3c7d; border-color: #2a3c7d;">
-                                    <i class="fas fa-edit"></i> Editar
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>6</td>
-                            <td>Provisión de útiles de oficina</td>
-                            <td>Adquisición de bienes</td>
-                            <td>Logística</td>
-                            <td>01/05/2025</td>
-                            <td>03/05/2025</td>
-                            <td class="text-center"><span class="badge bg-success">Finalizado</span></td>
-                            <td>
-                                <a href="/TerminosReferencia/Edit/6" class="btn btn-sm btn-primary" style="background-color: #2a3c7d; border-color: #2a3c7d;">
-                                    <i class="fas fa-edit"></i> Editar
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>7</td>
-                            <td>Asesoría legal tributaria</td>
-                            <td>Servicio de Consultoría</td>
-                            <td>Operaciones</td>
-                            <td>27/04/2025</td>
-                            <td>29/04/2025</td>
-                            <td class="text-center"><span class="badge bg-danger">Env. Corrección</span></td>
-                            <td>
-                                <a href="/TerminosReferencia/Edit/7" class="btn btn-sm btn-primary" style="background-color: #2a3c7d; border-color: #2a3c7d;">
-                                    <i class="fas fa-edit"></i> Editar
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>8</td>
-                            <td>Mantenimiento de aires acondicionados</td>
-                            <td>Servicios Generales</td>
-                            <td>Administración</td>
-                            <td>28/04/2025</td>
-                            <td>30/04/2025</td>
-                            <td class="text-center"><span class="badge bg-success">Finalizado</span></td>
-                            <td>
-                                <a href="/TerminosReferencia/Edit/8" class="btn btn-sm btn-primary" style="background-color: #2a3c7d; border-color: #2a3c7d;">
-                                    <i class="fas fa-edit"></i> Editar
-                                </a>
-                            </td>
-                        </tr>
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var tdr in Model)
+                            {
+                                <tr>
+                                    <td>@tdr.TDRID</td>
+                                    <td>@tdr.Title</td>
+                                    <td>@tdr.TypeName</td>
+                                    <td>@tdr.CreatedByUserName</td>
+                                    <td>@tdr.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>@(tdr.UpdatedAt.HasValue ? tdr.UpdatedAt.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm") : "-")</td>
+                                    <td class="text-center">
+                                        @{
+                                            string badgeClass = "bg-secondary";
+
+                                            switch (tdr.CurrentStateID)
+                                            {
+                                                case 1: // Borrador
+                                                    badgeClass = "bg-info";
+                                                    break;
+                                                case 2: // Pendiente de Revisión
+                                                    badgeClass = "bg-warning text-dark";
+                                                    break;
+                                                case 3: // Observado
+                                                    badgeClass = "bg-danger";
+                                                    break;
+                                                case 4: // Pendiente de Revisión Corregida
+                                                    badgeClass = "bg-warning text-dark";
+                                                    break;
+                                                case 5: // Aprobado
+                                                    badgeClass = "bg-success";
+                                                    break;
+                                                case 6: // Anulado
+                                                    badgeClass = "bg-dark";
+                                                    break;
+                                            }
+                                        }
+                                        <span class="badge @badgeClass">@tdr.StateName</span>
+                                    </td>
+                                    <td>
+                                        @if (tdr.CurrentStateID == 5) // Si está Aprobado
+                                        {
+                                            <a href="@Url.Action("Editar", "TerminosReferencia", new { id = tdr.TDRID })" class="btn btn-sm btn-info text-white" style="background-color: #4392f1; border-color: #4392f1;">
+                                                <i class="fas fa-eye"></i> Visualizar
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a href="@Url.Action("Editar", "TerminosReferencia", new { id = tdr.TDRID })" class="btn btn-sm btn-primary" style="background-color: #2a3c7d; border-color: #2a3c7d;">
+                                                <i class="fas fa-edit"></i> Editar
+                                            </a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center">No hay términos de referencia disponibles</td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
-
-<!-- Modal para seleccionar tipo de TDR -->
+<!-- Modal para seleccionar tipo de TDR y crear nuevo TDR -->
 <div class="modal fade" id="seleccionarTipoTDRModal" tabindex="-1" aria-labelledby="seleccionarTipoTDRModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header text-white" style="background-color: #2a3c7d;">
-                <h5 class="modal-title" id="seleccionarTipoTDRModalLabel">Seleccione el Tipo de Término de Referencia</h5>
+                <h5 class="modal-title" id="seleccionarTipoTDRModalLabel">Crear Nuevo Término de Referencia</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body py-4">
-                <div class="row g-4">
-                    <!-- Tarjeta: Adquisición de bienes -->
-                    <div class="col-md-6">
-                        <a href="/TerminosReferencia/Create?tipo=1" class="text-decoration-none">
-                            <div class="card h-100 shadow-sm tipo-tdr-card">
-                                <div class="card-body text-center p-4">
-                                    <div class="display-1 mb-3" style="color: #2a3c7d;">
-                                        <i class="fas fa-shopping-cart"></i>
-                                    </div>
-                                    <h5 class="card-title fw-bold">Adquisición de bienes</h5>
-                                    <p class="card-text text-muted">Para la compra de equipos, materiales y otros bienes.</p>
-                                </div>
-                            </div>
-                        </a>
+                <form id="formCrearTDR">
+                    <!-- Campo de título -->
+                    <div class="mb-4">
+                        <label for="tdrTitle" class="form-label">Título del Término de Referencia <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="tdrTitle" name="title" required placeholder="Ejemplo: Adquisición de equipos informáticos">
+                        <div class="form-text">Ingrese un título descriptivo para el término de referencia.</div>
                     </div>
 
-                    <!-- Tarjeta: Servicios Generales -->
-                    <div class="col-md-6">
-                        <a href="/TerminosReferencia/Create?tipo=2" class="text-decoration-none">
-                            <div class="card h-100 shadow-sm tipo-tdr-card">
-                                <div class="card-body text-center p-4">
-                                    <div class="display-1 mb-3" style="color: #2a3c7d;">
-                                        <i class="fas fa-cogs"></i>
-                                    </div>
-                                    <h5 class="card-title fw-bold">Servicios Generales</h5>
-                                    <p class="card-text text-muted">Para servicios diversos como mantenimiento, transporte, etc.</p>
-                                </div>
-                            </div>
-                        </a>
+                    <!-- Selector de tipo de TDR -->
+                    <div class="mb-3">
+                        <label class="form-label">Seleccione el tipo de TDR <span class="text-danger">*</span></label>
                     </div>
 
-                    <!-- Tarjeta: Servicio de Consultoría -->
-                    <div class="col-md-6">
-                        <a href="/TerminosReferencia/Create?tipo=3" class="text-decoration-none">
-                            <div class="card h-100 shadow-sm tipo-tdr-card">
-                                <div class="card-body text-center p-4">
-                                    <div class="display-1 mb-3" style="color: #2a3c7d;">
-                                        <i class="fas fa-file-alt"></i>
+                    <div class="row g-4" id="tipoTDRSelector">
+                        @if (ViewBag.TDRTypes != null)
+                        {
+                            foreach (var type in ViewBag.TDRTypes)
+                            {
+                                <div class="col-md-6">
+                                    <div class="card h-100 shadow-sm tipo-tdr-card" data-tdr-type-id="@type.TDRTypeID">
+                                        <div class="card-body text-center p-4">
+                                            <div class="display-1 mb-3" style="color: #2a3c7d;">
+                                                @{
+                                                    string iconClass = "fas fa-file-alt";
+
+                                                    switch (type.TDRTypeID)
+                                                    {
+                                                        case 1: // Servicios en General
+                                                            iconClass = "fas fa-cogs";
+                                                            break;
+                                                        case 2: // Locadores de Servicios
+                                                            iconClass = "fas fa-user-tie";
+                                                            break;
+                                                        case 3: // Adquisiciones de Bienes
+                                                            iconClass = "fas fa-shopping-cart";
+                                                            break;
+                                                        case 4: // Servicios de Consultoría
+                                                            iconClass = "fas fa-file-alt";
+                                                            break;
+                                                    }
+                                                }
+                                                <i class="@iconClass"></i>
+                                            </div>
+                                            <h5 class="card-title fw-bold">@type.TypeName</h5>
+                                            <p class="card-text text-muted">@type.Description</p>
+                                        </div>
                                     </div>
-                                    <h5 class="card-title fw-bold">Servicio de Consultoría</h5>
-                                    <p class="card-text text-muted">Para asesorías, estudios, investigaciones y similares.</p>
                                 </div>
-                            </div>
-                        </a>
+                            }
+                        }
                     </div>
 
-                    <!-- Tarjeta: Locadores de Servicios -->
-                    <div class="col-md-6">
-                        <a href="/TerminosReferencia/Create?tipo=4" class="text-decoration-none">
-                            <div class="card h-100 shadow-sm tipo-tdr-card">
-                                <div class="card-body text-center p-4">
-                                    <div class="display-1 mb-3" style="color: #2a3c7d;">
-                                        <i class="fas fa-user-tie"></i>
-                                    </div>
-                                    <h5 class="card-title fw-bold">Locadores de Servicios</h5>
-                                    <p class="card-text text-muted">Para la contratación de personas naturales por servicios específicos.</p>
-                                </div>
-                            </div>
-                        </a>
+                    <!-- Mensaje de error -->
+                    <div class="alert alert-danger mt-3 d-none" id="errorCrearTDR">
+                        Ocurrió un error al crear el TDR. Por favor, intente nuevamente.
                     </div>
-                </div>
+
+                    <!-- Campo oculto para el tipo seleccionado -->
+                    <input type="hidden" id="tdrTypeId" name="tdrTypeId" value="">
+                </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnCrearTDR" disabled style="background-color: #2a3c7d; border-color: #2a3c7d;">
+                    <i class="fas fa-plus-circle me-1"></i> Crear Término de Referencia
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación para anular -->
+<div class="modal fade" id="anularTDRModal" tabindex="-1" aria-labelledby="anularTDRModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="anularTDRModalLabel">Anular Término de Referencia</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro que desea anular el término de referencia "<span id="tdrTituloAnular"></span>"?</p>
+                <p class="text-danger">Esta acción no se puede deshacer.</p>
+                <form id="formAnularTDR" method="post" action="@Url.Action("Anular", "TerminosReferencia")">
+                    <input type="hidden" id="tdrId" name="id" />
+                    <div class="mb-3">
+                        <label for="motivo" class="form-label">Motivo de anulación</label>
+                        <textarea class="form-control" id="motivo" name="reason" rows="3" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="btnConfirmarAnular">Anular</button>
             </div>
         </div>
     </div>
@@ -269,23 +265,189 @@
         color: #2a3c7d !important;
     }
 
-    .card-title{
+    .card-title {
         color: #2a3c7d !important;
     }
 </style>
-
 @section Scripts {
     <script>
         $(document).ready(function () {
+
+            console.log("Cantidad de tipos de TDR disponibles: @cantidadTipos");
+
+        @if (tiposTDR != null && tiposTDR.Any())
+        {
+            foreach (var tipo in tiposTDR)
+            {
+                <text>console.log("Tipo TDR: ID=@tipo.TDRTypeID, Nombre=@tipo.TypeName"); </text>
+            }
+        }
+
             // Verificar si la tabla ya está inicializada como DataTable
             if (!$.fn.DataTable.isDataTable('#tablaTDR')) {
                 // Inicialización de DataTables
                 $('#tablaTDR').DataTable({
                     language: dataTablesSpanish,
                     responsive: true,
-                    order: [[4, 'desc']] // Ordenar por fecha de envío descendente
+                    order: [[4, 'desc']] // Ordenar por fecha de creación descendente
                 });
             }
+
+            // Variables para controlar la selección del tipo de TDR
+            let selectedTDRTypeId = null;
+
+            // Manejar la selección de las tarjetas
+            $(document).on('click', '.tipo-tdr-card', function () {
+                // Remover la clase "selected" de todas las tarjetas
+                $('.tipo-tdr-card').removeClass('selected-tdr-card');
+
+                // Agregar la clase "selected" a la tarjeta clickeada
+                $(this).addClass('selected-tdr-card');
+
+                // Guardar el ID del tipo seleccionado
+                selectedTDRTypeId = $(this).data('tdr-type-id');
+                $('#tdrTypeId').val(selectedTDRTypeId);
+
+                console.log("Tipo TDR seleccionado: " + selectedTDRTypeId);
+
+                // Habilitar el botón de crear si hay título y tipo seleccionado
+                validateForm();
+            });
+
+            // Validar el formulario cuando se cambia el título
+            $('#tdrTitle').on('input', function () {
+                validateForm();
+            });
+
+            // Función para validar el formulario
+            function validateForm() {
+                const title = $('#tdrTitle').val().trim();
+                const isValid = title.length > 0 && selectedTDRTypeId !== null;
+
+                console.log("Validación del formulario:");
+                console.log("Título: " + title);
+                console.log("Tipo TDR seleccionado: " + selectedTDRTypeId);
+                console.log("Formulario válido: " + isValid);
+
+                // Habilitar/deshabilitar el botón de crear según la validación
+                $('#btnCrearTDR').prop('disabled', !isValid);
+            }
+
+            // Manejar el envío del formulario
+            $('#btnCrearTDR').on('click', function () {
+                // Mostrar indicador de carga
+                $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Creando...');
+                $(this).prop('disabled', true);
+
+                // Ocultar mensaje de error si estaba visible
+                $('#errorCrearTDR').addClass('d-none');
+
+                // Obtener datos del formulario
+                const formData = {
+                    title: $('#tdrTitle').val().trim(),
+                    tdrTypeId: selectedTDRTypeId
+                };
+
+                // Realizar la petición AJAX
+                $.ajax({
+                    url: '@Url.Action("CreateTDR", "TerminosReferencia")', // Usar nuestro proxy
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    success: function (response) {
+                        // Cerrar el modal
+                        $('#seleccionarTipoTDRModal').modal('hide');
+
+                        // Mostrar mensaje de éxito
+                        showToast('Éxito', 'TDR creado correctamente. ID: ' + response.tdrId, 'success');
+
+                        // Recargar la página para actualizar la lista
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                    },
+                    error: function (xhr, status, error) {
+                        // Mostrar información detallada del error para depuración
+                        console.error("Error al crear TDR:");
+                        console.error("Status: " + status);
+                        console.error("Error: " + error);
+                        if (xhr.responseJSON) {
+                            console.error("Response JSON: ", xhr.responseJSON);
+                        } else if (xhr.responseText) {
+                            console.error("Response Text: " + xhr.responseText);
+                        }
+
+                        // Mostrar mensaje de error
+                        $('#errorCrearTDR').removeClass('d-none');
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            $('#errorCrearTDR').text(xhr.responseJSON.message);
+                        }
+
+                        // Restaurar el botón
+                        $('#btnCrearTDR').html('<i class="fas fa-plus-circle me-1"></i> Crear Término de Referencia');
+                        $('#btnCrearTDR').prop('disabled', false);
+                    }
+                });
+            });
+
+            // Reiniciar el formulario cuando se cierra el modal
+            $('#seleccionarTipoTDRModal').on('hidden.bs.modal', function () {
+                // Limpiar el campo de título
+                $('#tdrTitle').val('');
+
+                // Deseleccionar todas las tarjetas
+                $('.tipo-tdr-card').removeClass('selected-tdr-card');
+
+                // Reiniciar el tipo seleccionado
+                selectedTDRTypeId = null;
+                $('#tdrTypeId').val('');
+
+                // Deshabilitar el botón de crear
+                $('#btnCrearTDR').prop('disabled', true);
+                $('#btnCrearTDR').html('<i class="fas fa-plus-circle me-1"></i> Crear Término de Referencia');
+
+                // Ocultar mensaje de error
+                $('#errorCrearTDR').addClass('d-none');
+            });
         });
+
+        // Función para mostrar toast
+        function showToast(title, message, type) {
+            // Si ya existe un contenedor de toasts, úsalo; de lo contrario, créalo
+            if ($('#toast-container').length === 0) {
+                $('body').append('<div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index: 1100;"></div>');
+            }
+
+            // Generar un ID único para el toast
+            const toastId = 'toast-' + Date.now();
+
+            // Definir la clase de estilo según el tipo de toast
+            let bgClass = 'bg-primary';
+            if (type === 'success') bgClass = 'bg-success';
+            if (type === 'error') bgClass = 'bg-danger';
+            if (type === 'warning') bgClass = 'bg-warning text-dark';
+
+            // Crear el HTML del toast
+            const toastHtml = `
+                        <div id="${toastId}" class="toast align-items-center ${bgClass} text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    <strong>${title}</strong>: ${message}
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    `;
+
+            // Añadir el toast al contenedor
+            $('#toast-container').append(toastHtml);
+
+            // Inicializar y mostrar el toast
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement, {
+                delay: 5000
+            });
+            toast.show();
+        }
     </script>
 }

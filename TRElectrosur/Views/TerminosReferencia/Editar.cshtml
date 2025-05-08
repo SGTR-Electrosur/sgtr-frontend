@@ -1,0 +1,1154 @@
+﻿@model TRElectrosur.Models.TDR
+@{
+    ViewData["Title"] = "Editar Término de Referencia";
+    
+    // Lista de versiones disponibles (vendrá del controlador)
+    var versiones = ViewBag.Versiones ?? new List<object>();
+    
+    // Estado actual del TDR
+    var estadoActual = Model.CurrentStateName;
+    var estadoID = Model.CurrentStateID;
+    var esAprobado = estadoID == 5;
+}
+
+<div class="container-fluid px-0">
+    <!-- Cabecera de la página -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">@(esAprobado ? "Visualizar" : "Editar") Término de Referencia</h1>
+            <p class="mb-0 text-muted">
+                <span class="fw-bold">ID:</span> @Model.TDRID | 
+                <span class="fw-bold">Tipo:</span> @Model.TDRTypeName | 
+                <span class="fw-bold">Estado:</span> 
+                @{
+                    string badgeClass = "bg-secondary";
+                    
+                    switch (Model.CurrentStateID)
+                    {
+                        case 1: // Borrador
+                            badgeClass = "bg-info";
+                            break;
+                        case 2: // Pendiente de Revisión
+                        case 4: // Pendiente de Revisión Corregida
+                            badgeClass = "bg-warning text-dark";
+                            break;
+                        case 3: // Observado
+                            badgeClass = "bg-danger";
+                            break;
+                        case 5: // Aprobado
+                            badgeClass = "bg-success";
+                            break;
+                        case 6: // Anulado
+                            badgeClass = "bg-dark";
+                            break;
+                    }
+                }
+                <span class="badge @badgeClass">@Model.CurrentStateName</span>
+            </p>
+        </div>
+        <div class="d-flex align-items-center">
+            <!-- Selector de versiones -->
+            <div class="input-group me-2" style="width: 200px;">
+                <label class="input-group-text" for="versionSelector">Versión</label>
+                <select class="form-select" id="versionSelector">
+                    @foreach (var version in versiones)
+                    {
+                        if (version.TDRVersionID == ViewBag.VersionActual)
+                        {
+                            <option value="@version.TDRVersionID" selected>Versión @version.VersionNumber</option>
+                        }
+                        else
+                        {
+                            <option value="@version.TDRVersionID">Versión @version.VersionNumber</option>
+                        }
+                    }
+                </select>
+                <button class="btn btn-outline-primary" id="btnCargarVersion">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+            
+            <!-- Botón Descargar PDF (solo si está aprobado) -->
+            @if (esAprobado)
+            {
+                <a href="@Url.Action("DescargarPDF", "TerminosReferencia", new { id = Model.TDRID })" class="btn btn-success me-2">
+                    <i class="fas fa-file-pdf me-1"></i> Descargar PDF
+                </a>
+            }
+            
+            <a href="@Url.Action("Index", "TerminosReferencia")" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i> Volver al listado
+            </a>
+        </div>
+    </div>
+
+    <!-- Formulario principal -->
+    <form id="formEditarTDR" method="post" action="@Url.Action("Guardar", "TerminosReferencia", new { id = Model.TDRID })">
+        <input type="hidden" name="tdrid" value="@Model.TDRID" />
+        <input type="hidden" name="versionId" value="@ViewBag.VersionActual" />
+
+        <!-- Pestañas de navegación -->
+        <ul class="nav nav-tabs mb-4" id="tdrTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="info-general-tab" data-bs-toggle="tab" data-bs-target="#info-general" type="button" role="tab" aria-controls="info-general" aria-selected="true" style="color: #2a3c7d;">
+                    <i class="fas fa-info-circle me-1"></i> Información General
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="alcances-tab" data-bs-toggle="tab" data-bs-target="#alcances" type="button" role="tab" aria-controls="alcances" aria-selected="false" style="color: #495057;">
+                    <i class="fas fa-tasks me-1"></i> Alcances
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="requisitos-tab" data-bs-toggle="tab" data-bs-target="#requisitos" type="button" role="tab" aria-controls="requisitos" aria-selected="false" style="color: #495057;">
+                    <i class="fas fa-clipboard-check me-1"></i> Requisitos
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="entregables-tab" data-bs-toggle="tab" data-bs-target="#entregables" type="button" role="tab" aria-controls="entregables" aria-selected="false" style="color: #495057;">
+                    <i class="fas fa-box me-1"></i> Plazos y Entregables
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="condiciones-tab" data-bs-toggle="tab" data-bs-target="#condiciones" type="button" role="tab" aria-controls="condiciones" aria-selected="false" style="color: #495057;">
+                    <i class="fas fa-file-contract me-1"></i> Condiciones
+                </button>
+            </li>
+        </ul>
+
+        <!-- Contenido de las pestañas -->
+        <div class="tab-content" id="tdrTabsContent">
+            <!-- 1. Información General -->
+            <div class="tab-pane fade show active" id="info-general" role="tabpanel" aria-labelledby="info-general-tab">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">Información General</h6>
+                    </div>
+                    <div class="card-body">
+                        <!-- Campo 1: Organismo (predefinido y no editable) -->
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <label class="form-label">1. Organismo</label>
+                                <input type="text" class="form-control" value="EMPRESA REGIONAL DE SERVICIO PUBLICO DE ELECTRICIDAD – ELECTROSUR S.A." readonly>
+                                <div class="form-text">La entidad que convoca el presente requerimiento con domicilio legal en la Calle Zela n°408 – TACNA.</div>
+                            </div>
+                        </div>
+
+                        <!-- Campo 2: Órgano y/o Unidad Orgánica -->
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <label for="field_organoUnidadOrganica" class="form-label">2. Órgano y/o Unidad Orgánica</label>
+                                <textarea id="field_organoUnidadOrganica" name="fields[organoUnidadOrganica]" class="form-control" rows="2" @(esAprobado ? "readonly" : "")></textarea>
+                                <div class="form-text">INDICAR EL ÓRGANO Y/O UNIDAD ORGÁNICA, RESPONSABLE DEL REQUERIMIENTO</div>
+                                
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Campo 3: Actividad POI/Acción Estratégica -->
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <label for="field_actividadPoiAccionEstrategica" class="form-label">3. Actividad del POI/Acción Estratégica PEI</label>
+                                <textarea id="field_actividadPoiAccionEstrategica" name="fields[actividadPoiAccionEstrategica]" class="form-control" rows="2" @(esAprobado ? "readonly" : "")></textarea>
+                                <div class="form-text">INDICAR EL CÓDIGO Y LA DENOMINACIÓN DEL PLAN POI</div>
+                                
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Campo 4: Denominación de la Contratación -->
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <label for="field_denominacionContratacion" class="form-label">4. Denominación de la Contratación</label>
+                                <textarea id="field_denominacionContratacion" name="fields[denominacionContratacion]" class="form-control" rows="2" @(esAprobado ? "readonly" : "")></textarea>
+                                <div class="form-text">INDICAR LA DENOMINACIÓN DEL REQUERIMIENTO DE CONTRATACIÓN</div>
+                                
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Campo 5: Finalidad Pública -->
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <label for="field_finalidadPublica" class="form-label">5. Finalidad Pública</label>
+                                <div id="editor_finalidadPublica"></div>
+                                <textarea id="field_finalidadPublica" name="fields[finalidadPublica]" class="d-none"></textarea>
+                                <div class="form-text">INDICAR QUÉ SE BUSCA SATISFACER, MEJORAR Y/O ATENDER CON LA CONTRATACIÓN REQUERIDA</div>
+                                
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Campo 6: Objetivo de la Contratación -->
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <label for="field_objetivoContratacion" class="form-label">6. Objetivo de la Contratación</label>
+                                <div id="editor_objetivoContratacion"></div>
+                                <textarea id="field_objetivoContratacion" name="fields[objetivoContratacion]" class="d-none"></textarea>
+                                <div class="form-text">INDICAR CUÁL ES EL OBJETIVO DE LA CONTRATACIÓN QUE PERMITA CONOCER AL PROVEEDOR CLARAMENTE QUÉ BENEFICIOS PRETENDE OBTENER MEDIANTE EL PRESENTE SERVICIO</div>
+                                
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Alcances -->
+            <div class="tab-pane fade" id="alcances" role="tabpanel" aria-labelledby="alcances-tab">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">7. Alcances del Servicio</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    EL ÁREA USUARIA DEBERÁ INDICAR EL DETALLE DE LAS ACTIVIDADES A DESARROLLAR, ASÍ COMO EL PROCEDIMIENTO A SEGUIR PARA EL DESARROLLO DEL SERVICIO, PLAN DE TRABAJO, RECURSOS A SER PREVISTOS POR EL PROVEEDOR Y POR LA ENTIDAD PARA LA EJECUCIÓN DEL SERVICIO.
+                                    EN LOS CASOS QUE CORRESPONDA, DEBERÁ INDICARSE EXPRESAMENTE SI LA PRESTACIÓN PRINCIPAL CONLLEVA A LA EJECUCIÓN DE PRESTACIONES ACCESORIAS, TALES COMO MANTENIMIENTO, SOPORTE TÉCNICO O CAPACITACIONES.
+                                </div>
+                                
+                                <div id="editor_alcancesServicio"></div>
+                                <textarea id="field_alcancesServicio" name="fields[alcancesServicio]" class="d-none"></textarea>
+                                
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">9. Reglamentos Técnicos, Normas y Otros</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    SEÑALAR REGLAMENTOS TÉCNICOS, NORMAS METROLÓGICAS Y/O SANITARIAS, REGLAMENTOS Y DEMÁS NORMAS QUE REGULAN EL OBJETO DE LA CONTRATACIÓN CON CARÁCTER OBLIGATORIO
+                                </div>
+                                
+                                <div id="editor_reglamentos"></div>
+                                <textarea id="field_reglamentos" name="fields[reglamentos]" class="d-none"></textarea>
+                                
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">10. Seguros</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    DE SER EL CASO, PRECISAR EL TIPO DE SEGURO QUE SE EXIGE AL PROVEEDOR, LA COBERTURA, EL PLAZO, MONTO DE COBERTURA Y OPORTUNIDAD DE SU PRESENTACIÓN
+                                </div>
+                                
+                                <div id="editor_seguros"></div>
+                                <textarea id="field_seguros" name="fields[seguros]" class="d-none"></textarea>
+                                
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">11. Prestaciones Accesorias</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    DE SER EL CASO, INCLUIR LAS PRESTACIONES ACCESORIAS QUE SE CONSIDEREN NECESARIAS
+                                </div>
+                                
+                                <div id="editor_prestacionesAccesorias"></div>
+                                <textarea id="field_prestacionesAccesorias" name="fields[prestacionesAccesorias]" class="d-none"></textarea>
+                                
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Requisitos -->
+            <div class="tab-pane fade" id="requisitos" role="tabpanel" aria-labelledby="requisitos-tab">
+                <!-- Requisitos del Proveedor -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">8. Requisitos del Proveedor</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Requisitos básicos: RUC activo y habido. Registro Nacional de Proveedores (si monto supera 1 UIT).
+                                </div>
+                                
+                                <div id="editor_requisitosProveedor"></div>
+                                <textarea id="field_requisitosProveedor" name="fields[requisitosProveedor]" class="d-none"></textarea>
+                                
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Experiencia del Proveedor -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">8.1 Experiencia del Proveedor</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Consignar como experiencia una de las dos opciones: (A) un monto facturado acumulado equivalente o (B) la contratación de una cantidad de servicios. 
+                                    En servicios iguales o similares al objeto de la convocatoria durante los 8 años anteriores.
+                                </div>
+                                
+                                <div id="editor_experienciaProveedor"></div>
+                                <textarea id="field_experienciaProveedor" name="fields[experienciaProveedor]" class="d-none"></textarea>
+                                
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Perfil del Personal -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">8.2 Perfil del Personal</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div id="editor_perfilPersonal"></div>
+                                <textarea id="field_perfilPersonal" name="fields[perfilPersonal]" class="d-none"></textarea>
+                                
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formación Académica -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">8.2.1 Formación Académica</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Consignar el grado o título profesional requerido para el personal clave. De corresponder, especificar colegiatura y habilitación.
+                                </div>
+                                
+                                <div id="editor_formacionAcademica"></div>
+                                <textarea id="field_formacionAcademica" name="fields[formacionAcademica]" class="d-none"></textarea>
+                                
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Experiencia del Personal Clave -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">8.2.2 Experiencia del Personal Clave</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Consignar el tiempo de experiencia mínima en actividades o trabajos relacionados al objeto de la contratación del personal clave.
+                                </div>
+                                
+                                <div id="editor_experienciaPersonalClave"></div>
+                                <textarea id="field_experienciaPersonalClave" name="fields[experienciaPersonalClave]" class="d-none"></textarea>
+                                
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Capacitación -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">8.2.3 Capacitación</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Consignar la cantidad de horas lectivas (hasta 120 horas) en la materia o área de capacitación requerida para el personal clave.
+                                </div>
+                                
+                                <div id="editor_capacitacion"></div>
+                                <textarea id="field_capacitacion" name="fields[capacitacion]" class="d-none"></textarea>
+                                
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Otros -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">8.2.4 Otros</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div id="editor_otros"></div>
+                                <textarea id="field_otros" name="fields[otros]" class="d-none"></textarea>
+                                
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Plazos y Entregables -->
+            <div class="tab-pane fade" id="entregables" role="tabpanel" aria-labelledby="entregables-tab">
+                <!-- Lugar -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">12.1 Lugar</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Señalar el lugar donde se efectuará la prestación del servicio, especificando distrito, provincia y región.
+                                </div>
+                                
+                                <div id="editor_lugar"></div>
+                                <textarea id="field_lugar" name="fields[lugar]" class="d-none"></textarea>
+                                
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plazo -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">12.2 Plazo</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Definir el plazo máximo en días calendario, indicar el inicio de la ejecución del servicio (a partir del día siguiente de notificado el pedido de compra o condiciones previas).
+                                </div>
+                                
+                                <div id="editor_plazo"></div>
+                                <textarea id="field_plazo" name="fields[plazo]" class="d-none"></textarea>
+                                
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Entregables -->
+                <!-- Entregables -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">13. Entregables</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Definir la forma de presentación del informe (único, mensual o por entregables). Si es por entregable, detallar el número, porcentaje, plazo y contenido de cada uno.
+                                </div>
+
+                                <div id="editor_entregables"></div>
+                                <textarea id="field_entregables" name="fields[entregables]" class="d-none"></textarea>
+
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plazo y Lugar de presentación de entregables -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">13.1 Plazo y Lugar de Presentación de los Entregables</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Una vez culminado el plazo de ejecución establecido por entregable, el contratista tendrá un plazo máximo de dos (02) días hábiles siguientes para su presentación.
+                                </div>
+
+                                <div id="editor_plazoLugar"></div>
+                                <textarea id="field_plazoLugar" name="fields[plazoLugar]" class="d-none"></textarea>
+
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conformidad -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">14. Conformidad</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Consignar el cargo y órgano y/o unidad orgánica responsable de otorgar la conformidad del servicio. La conformidad se otorgará en un plazo máximo de siete (07) días calendario.
+                                </div>
+
+                                <div id="editor_conformidad"></div>
+                                <textarea id="field_conformidad" name="fields[conformidad]" class="d-none"></textarea>
+
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Condiciones -->
+            <div class="tab-pane fade" id="condiciones" role="tabpanel" aria-labelledby="condiciones-tab">
+                <!-- Sistema de Contratación -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">15. Sistema de Contratación</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Precisar el sistema de contratación (A suma alzada o A precios unitarios).
+                                </div>
+
+                                <div id="editor_sistemaContratacion"></div>
+                                <textarea id="field_sistemaContratacion" name="fields[sistemaContratacion]" class="d-none"></textarea>
+
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Forma y Condiciones de Pago -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">16. Forma y Condiciones de Pago</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Expresar la forma de pago: única, mensual o por entregables. El pago se realizará con abono en la cuenta del contratista, como plazo máximo de diez (10) días hábiles luego de otorgada la conformidad.
+                                </div>
+
+                                <div id="editor_formaCondicionesPago"></div>
+                                <textarea id="field_formaCondicionesPago" name="fields[formaCondicionesPago]" class="d-none"></textarea>
+
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Responsabilidad del Proveedor -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">18. Responsabilidad del Proveedor</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    El proveedor es responsable por la calidad ofrecida y por los vicios ocultos del servicio ofertado por un plazo no menor a un (1) año.
+                                </div>
+
+                                <div id="editor_responsabilidad"></div>
+                                <textarea id="field_responsabilidad" name="fields[responsabilidad]" class="d-none"></textarea>
+
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Otras Penalidades -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">20.2 Otras Penalidades</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    De corresponder, establecer otras penalidades diferentes al retraso, las cuales deben ser objetivas, razonables y proporcionales con el objeto de la contratación.
+                                </div>
+
+                                <div id="editor_otrasPenalidades"></div>
+                                <textarea id="field_otrasPenalidades" name="fields[otrasPenalidades]" class="d-none"></textarea>
+
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medidas de Seguridad -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">24. Medidas de Seguridad en la Prestación de Servicio</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Indicar Alto Riesgo o Bajo Riesgo.
+                                </div>
+
+                                <div id="editor_medidasSeguridad"></div>
+                                <textarea id="field_medidasSeguridad" name="fields[medidasSeguridad]" class="d-none"></textarea>
+
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cláusula -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">30. Cláusula</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div id="editor_clausula"></div>
+                                <textarea id="field_clausula" name="fields[clausula]" class="d-none"></textarea>
+
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Anexos -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-white">
+                        <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">32.1 Anexos</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div id="editor_anexos"></div>
+                                <textarea id="field_anexos" name="fields[anexos]" class="d-none"></textarea>
+
+                                <!-- Campo de observación -->
+                                <div class="mt-2">
+                                    <label class="form-label text-danger">Observación:</label>
+                                    <textarea class="form-control bg-light" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="d-flex justify-content-between mt-4 mb-5">
+            <button type="button" class="btn btn-outline-secondary" id="btnCancelar" onclick="location.href='@Url.Action("Index", "TerminosReferencia")'">
+                <i class="fas fa-times me-1"></i> Cancelar
+            </button>
+
+            <div>
+                @if (!esAprobado)
+                {
+                    <!-- Botones contextuales según estado -->
+                    @if (Model.CurrentStateID == 1) // Borrador
+                    {
+                        <button type="button" class="btn btn-warning me-2" id="btnEnviarRevision">
+                            <i class="fas fa-paper-plane me-1"></i> Enviar a Revisión
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="btnGuardar" style="background-color: #2a3c7d; border-color: #2a3c7d;">
+                            <i class="fas fa-save me-1"></i> Guardar Cambios
+                        </button>
+                    }
+                    else if (Model.CurrentStateID == 3) // Observado
+                    {
+                        <button type="button" class="btn btn-warning me-2" id="btnEnviarRevisionCorregida">
+                            <i class="fas fa-paper-plane me-1"></i> Enviar Corrección
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="btnGuardar" style="background-color: #2a3c7d; border-color: #2a3c7d;">
+                            <i class="fas fa-save me-1"></i> Guardar Cambios
+                        </button>
+                    }
+                    else if (Model.CurrentStateID == 2 || Model.CurrentStateID == 4) // Pendiente de Revisión o Pendiente de Revisión Corregida
+                    {
+                        <button type="button" class="btn btn-danger me-2" id="btnCancelarRevision">
+                            <i class="fas fa-undo me-1"></i> Cancelar Revisión
+                        </button>
+                    }
+                }
+            </div>
+        </div>
+    </form>
+
+    <!-- Modales para cambios de estado -->
+    <!-- Modal para enviar a revisión -->
+    <div class="modal fade" id="modalEnviarRevision" tabindex="-1" aria-labelledby="modalEnviarRevisionLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title" id="modalEnviarRevisionLabel">Enviar a Revisión</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro que desea enviar este TDR para revisión? Una vez enviado, no podrá realizar cambios hasta que sea observado o aprobado.</p>
+                    <p class="mb-0 fw-bold">TDR: @Model.Title</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-warning" id="btnConfirmarEnviarRevision">Enviar a Revisión</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para enviar corrección -->
+    <div class="modal fade" id="modalEnviarCorrecion" tabindex="-1" aria-labelledby="modalEnviarCorrecionLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title" id="modalEnviarCorrecionLabel">Enviar Corrección</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro que desea enviar la corrección de este TDR para revisión? Una vez enviado, no podrá realizar cambios hasta que sea observado o aprobado.</p>
+                    <p class="mb-0 fw-bold">TDR: @Model.Title</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-warning" id="btnConfirmarEnviarCorreccion">Enviar Corrección</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para cancelar revisión -->
+    <div class="modal fade" id="modalCancelarRevision" tabindex="-1" aria-labelledby="modalCancelarRevisionLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="modalCancelarRevisionLabel">Cancelar Revisión</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro que desea cancelar la revisión de este TDR? El estado volverá a borrador y podrá editarlo nuevamente.</p>
+                    <p class="mb-0 fw-bold">TDR: @Model.Title</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, mantener en revisión</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmarCancelarRevision">Sí, cancelar revisión</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- CKEditor 5 -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/37.1.0/classic/ckeditor.js"></script>
+
+    <script>
+        // Variables para los editores
+        let editores = {};
+        let tabActual = 0;
+        const tabs = ['info-general-tab', 'alcances-tab', 'requisitos-tab', 'entregables-tab', 'condiciones-tab'];
+        let esAprobado = @(esAprobado ? "true" : "false");
+
+        $(document).ready(function () {
+            // Inicializar CKEditor para los campos de texto enriquecido
+            inicializarEditores();
+
+            // Manejar la navegación entre pestañas
+            configurarNavegacion();
+
+            // Configurar los botones de acciones
+            configurarBotones();
+
+            // Cargar los datos de los campos
+            cargarCampos();
+        });
+
+        function inicializarEditores() {
+            // Lista de campos que necesitan editor WYSIWYG
+            const camposEditor = [
+                'finalidadPublica', 'objetivoContratacion', 'alcancesServicio', 'reglamentos',
+                'seguros', 'prestacionesAccesorias', 'requisitosProveedor', 'experienciaProveedor',
+                'perfilPersonal', 'formacionAcademica', 'experienciaPersonalClave', 'capacitacion',
+                'otros', 'lugar', 'plazo', 'entregables', 'plazoLugar', 'conformidad',
+                'sistemaContratacion', 'formaCondicionesPago', 'responsabilidad', 'otrasPenalidades',
+                'medidasSeguridad', 'clausula', 'anexos'
+            ];
+
+            // Inicializar cada editor
+            camposEditor.forEach(campo => {
+                ClassicEditor.create(document.getElementById('editor_' + campo), {
+                    toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'insertTable', 'undo', 'redo']
+                })
+                    .then(editor => {
+                        editores[campo] = editor;
+
+                        // Si está aprobado, desactivar la edición
+                        if (esAprobado) {
+                            editor.isReadOnly = true;
+                        }
+
+                        // Actualizar el textarea oculto al cambiar el contenido
+                        editor.model.document.on('change:data', () => {
+                            document.getElementById('field_' + campo).value = editor.getData();
+                        });
+                    })
+                    .catch(error => {
+                        console.error(`Error al inicializar el editor ${campo}:`, error);
+                    });
+            });
+        }
+
+        function configurarNavegacion() {
+            // Al cambiar de pestaña manualmente
+            $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+                tabActual = tabs.indexOf(e.target.id);
+
+                // Actualizar color de las pestañas
+                $('button[data-bs-toggle="tab"]').css('color', '#495057');
+                $(this).css('color', '#2a3c7d');
+            });
+        }
+
+        function configurarBotones() {
+            // Botón de enviar a revisión
+            $('#btnEnviarRevision').on('click', function () {
+                $('#modalEnviarRevision').modal('show');
+            });
+
+            // Confirmar envío a revisión
+            $('#btnConfirmarEnviarRevision').on('click', function () {
+                cambiarEstadoTDR(2); // Cambiar a "Pendiente de Revisión"
+            });
+
+            // Botón de enviar corrección
+            $('#btnEnviarRevisionCorregida').on('click', function () {
+                $('#modalEnviarCorrecion').modal('show');
+            });
+
+            // Confirmar envío de corrección
+            $('#btnConfirmarEnviarCorreccion').on('click', function () {
+                cambiarEstadoTDR(4); // Cambiar a "Pendiente de Revisión Corregida"
+            });
+
+            // Botón de cancelar revisión
+            $('#btnCancelarRevision').on('click', function () {
+                $('#modalCancelarRevision').modal('show');
+            });
+
+            // Confirmar cancelación de revisión
+            $('#btnConfirmarCancelarRevision').on('click', function () {
+                cambiarEstadoTDR(1); // Volver a "Borrador"
+            });
+
+            // Botón cargar versión
+            $('#btnCargarVersion').on('click', function () {
+                var versionId = $('#versionSelector').val();
+                window.location.href = '@Url.Action("Editar", "TerminosReferencia", new { id = Model.TDRID })' + '?versionId=' + versionId;
+            });
+        }
+
+        function cambiarEstadoTDR(nuevoEstadoId) {
+            // Guardar primero los cambios
+            guardarCampos().then(() => {
+                // Luego enviar la solicitud para cambiar el estado
+                $.ajax({
+                    url: '@Url.Action("CambiarEstado", "TerminosReferencia", new { id = Model.TDRID })',
+                    type: 'POST',
+                    data: {
+                        newStateId: nuevoEstadoId,
+                        reason: ''
+                    },
+                    success: function (response) {
+                        // Cerrar el modal correspondiente
+                        $('.modal').modal('hide');
+
+                        // Mostrar mensaje de éxito
+                        showToast('Éxito', 'El estado del TDR ha sido actualizado', 'success');
+
+                        // Recargar la página después de un breve retraso
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                    },
+                    error: function (xhr, status, error) {
+                        // Mostrar mensaje de error
+                        showToast('Error', 'No se pudo cambiar el estado del TDR', 'error');
+                    }
+                });
+            });
+        }
+
+        function guardarCampos() {
+            return new Promise((resolve, reject) => {
+                // Preparar todos los datos de los editores
+                for (const [campo, editor] of Object.entries(editores)) {
+                    document.getElementById('field_' + campo).value = editor.getData();
+                }
+
+                // Convertir el formulario a un objeto FormData
+                const formData = new FormData(document.getElementById('formEditarTDR'));
+
+                // Enviar los datos mediante AJAX
+                $.ajax({
+                    url: $('#formEditarTDR').attr('action'),
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        resolve(response);
+                    },
+                    error: function (xhr, status, error) {
+                        reject(error);
+                    }
+                });
+            });
+        }
+
+        function cargarCampos() {
+            // Obtener los campos del TDR para la versión actual
+            $.ajax({
+                url: '@Url.Action("ObtenerCampos", "TerminosReferencia", new { id = Model.TDRID, versionId = ViewBag.VersionActual })',
+                type: 'GET',
+                success: function (camposData) {
+                    // Recorrer los campos recibidos y llenar los correspondientes campos en el formulario
+                    camposData.forEach(campo => {
+                        const fieldName = campo.FieldName;
+                        const htmlContent = campo.HtmlContent || '';
+                        const observacion = campo.lastReview && campo.lastReview.Comment ? campo.lastReview.Comment : '';
+
+                        // Buscar el campo correspondiente
+                        if (editores[fieldName]) {
+                            // Para editores CKEditor
+                            editores[fieldName].setData(htmlContent);
+                            // Actualizar el textarea oculto también
+                            document.getElementById('field_' + fieldName).value = htmlContent;
+                        } else {
+                            // Para campos de texto normal
+                            const inputField = document.getElementById('field_' + fieldName);
+                            if (inputField) {
+                                inputField.value = htmlContent;
+                            }
+                        }
+
+                        // Actualizar el campo de observación si existe
+                        const fieldObservation = $(`#field_${fieldName}`).closest('.row').find('.text-danger').next('textarea');
+                        if (fieldObservation.length > 0) {
+                            fieldObservation.val(observacion);
+                        }
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error al cargar los campos:', error);
+                    showToast('Error', 'No se pudieron cargar los campos del TDR', 'error');
+                }
+            });
+        }
+
+        // Función para mostrar toast
+        function showToast(title, message, type) {
+            // Si ya existe un contenedor de toasts, úsalo; de lo contrario, créalo
+            if ($('#toast-container').length === 0) {
+                $('body').append('<div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index: 1100;"></div>');
+            }
+
+            // Generar un ID único para el toast
+            const toastId = 'toast-' + Date.now();
+
+            // Definir la clase de estilo según el tipo de toast
+            let bgClass = 'bg-primary';
+            if (type === 'success') bgClass = 'bg-success';
+            if (type === 'error') bgClass = 'bg-danger';
+            if (type === 'warning') bgClass = 'bg-warning text-dark';
+
+            // Crear el HTML del toast
+            const toastHtml = `
+                        <div id="${toastId}" class="toast align-items-center ${bgClass} text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    <strong>${title}</strong>: ${message}
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    `;
+
+            // Añadir el toast al contenedor
+            $('#toast-container').append(toastHtml);
+
+            // Inicializar y mostrar el toast
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement, {
+                delay: 5000
+            });
+            toast.show();
+        }
+    </script>
+}

@@ -92,6 +92,7 @@ namespace TRElectrosur.Services
                 var response = await _httpClient.GetAsync($"{_baseUrl}{endpoint}");
 
                 var responseContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Respuesta API para {endpoint}: {responseContent}"); // Para depuración
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -99,10 +100,13 @@ namespace TRElectrosur.Services
                     return default;
                 }
 
-                return JsonSerializer.Deserialize<T>(responseContent, new JsonSerializerOptions
+                // Opciones de deserialización con PropertyNameCaseInsensitive para manejar las mayúsculas/minúsculas
+                var options = new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
-                });
+                };
+
+                return JsonSerializer.Deserialize<T>(responseContent, options);
             }
             catch (Exception ex)
             {

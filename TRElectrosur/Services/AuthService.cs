@@ -36,6 +36,7 @@ namespace TRElectrosur.Services
                     // Guardar datos del usuario en la sesión
                     _httpContextAccessor.HttpContext.Session.SetString("UserName", $"{response.User.FirstName} {response.User.LastName}");
                     _httpContextAccessor.HttpContext.Session.SetInt32("RoleId", response.User.RoleId);
+                    _httpContextAccessor.HttpContext.Session.SetInt32("UserId", response.User.Id);
 
                     if (response.User.AreaId.HasValue)
                     {
@@ -79,6 +80,11 @@ namespace TRElectrosur.Services
         public int? GetAreaId()
         {
             return _httpContextAccessor.HttpContext.Session.GetInt32("AreaId");
+        }
+
+        public int? GetUserId()
+        {
+            return _httpContextAccessor.HttpContext.Session.GetInt32("UserId");
         }
     }
 }
