@@ -235,39 +235,61 @@ namespace TRElectrosur.Controllers
         }
 
 
+        // Agregar estos métodos a la clase TerminosReferenciaController
         [HttpPost]
-        public async Task<IActionResult> CambiarEstado(int id, int newStateId, string reason)
+        public async Task<JsonResult> CambiarEstado(int id, int newStateId, string reason)
         {
             try
             {
                 string token = _authService.GetToken();
 
-                // Preparar la solicitud
                 var request = new
                 {
                     newStateId = newStateId,
                     reason = reason
                 };
 
-                // Enviar la solicitud para cambiar el estado
-                var response = await _apiService.PutAsync<dynamic>($"/api/tdrs/{id}/state", request, token);
+                await _apiService.PutAsync<object>($"/api/tdrs/{id}/state", request, token);
 
-                if (response != null)
-                {
-                    TempData["SuccessMessage"] = "Estado actualizado correctamente";
-                    return Json(new { success = true });
-                }
-                else
-                {
-                    return StatusCode(500, new { success = false, message = "Error al cambiar el estado" });
-                }
+                // Enviar URL para recargar la página de edición con el ID correspondiente
+                var redirectUrl = Url.Action("Editar", "TerminosReferencia", new { id = id });
+                return Json(new { success = true, redirectUrl });
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error al cambiar estado: {ex.Message}");
-                return StatusCode(500, new { success = false, message = "Error al cambiar el estado: " + ex.Message });
+                return Json(new { success = false, message = ex.Message });
             }
         }
+
+
+        [HttpPost]
+        public async Task<IActionResult> CrearNuevaVersion(int id)
+        {
+            try
+            {
+                string token = _authService.GetToken();
+
+                // API espera una solicitud POST sin cuerpo
+                var response = await _apiService.PostAsync<dynamic>($"/api/tdrs/{id}/versions", null, token);
+
+                if (response != null)
+                {
+                    TempData["SuccessMessage"] = "Nueva versión creada correctamente";
+                    return Json(new { success = true });
+                }
+                else
+                {
+                    return StatusCode(500, new { success = false, message = "Error al crear nueva versión" });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error al crear nueva versión: {ex.Message}");
+                return StatusCode(500, new { success = false, message = "Error al crear nueva versión: " + ex.Message });
+            }
+        }
+
 
         public async Task<IActionResult> DescargarPDF(int id)
         {
@@ -275,13 +297,14 @@ namespace TRElectrosur.Controllers
             {
                 string token = _authService.GetToken();
 
-                // Realizar la solicitud al endpoint de descarga (asumiendo que existe o tendría que implementarse)
-                var response = await _apiService.GetAsync<byte[]>($"/api/tdrs/{id}/pdf", token);
+                // Utilizar directamente el ApiService para mantener consistencia con el resto de la aplicación
+                // Este servicio ya tiene configurada la URL base desde appsettings.json
+                var response = await _apiService.GetFileAsync($"/api/tdrs/{id}/export-pdf", token);
 
-                if (response != null)
+                if (response != null && response.FileContent != null)
                 {
                     // Devolver el archivo PDF
-                    return File(response, "application/pdf", $"TDR-{id}.pdf");
+                    return File(response.FileContent, "application/pdf", response.Filename ?? $"TDR-{id}.pdf");
                 }
                 else
                 {
@@ -292,7 +315,7 @@ namespace TRElectrosur.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Error al descargar PDF: {ex.Message}");
-                TempData["ErrorMessage"] = "Error al generar el PDF";
+                TempData["ErrorMessage"] = "Error al generar el PDF: " + ex.Message;
                 return RedirectToAction("Editar", new { id = id });
             }
         }

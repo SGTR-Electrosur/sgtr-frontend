@@ -231,5 +231,61 @@ namespace TRElectrosur.Services
                 throw;
             }
         }
+
+        // Agregar esto a ApiService.cs
+        public async Task<FileResponse> GetFileAsync(string endpoint, string token = null)
+        {
+            try
+            {
+                // Configurar correctamente los headers
+                _httpClient.DefaultRequestHeaders.Accept.Clear();
+                _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/pdf"));
+
+                if (!string.IsNullOrEmpty(token))
+                {
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                }
+
+                var response = await _httpClient.GetAsync($"{_baseUrl}{endpoint}");
+
+                // Verificar si la solicitud fue exitosa
+                if (response.IsSuccessStatusCode)
+                {
+                    // Leer el contenido como un array de bytes
+                    var fileContent = await response.Content.ReadAsByteArrayAsync();
+
+                    // Obtener el nombre del archivo de las cabeceras de respuesta si está disponible
+                    string filename = null;
+                    if (response.Content.Headers.ContentDisposition != null &&
+                        !string.IsNullOrEmpty(response.Content.Headers.ContentDisposition.FileName))
+                    {
+                        filename = response.Content.Headers.ContentDisposition.FileName.Trim('"');
+                    }
+
+                    return new FileResponse
+                    {
+                        FileContent = fileContent,
+                        Filename = filename,
+                        ContentType = response.Content.Headers.ContentType?.MediaType
+                    };
+                }
+
+                Console.WriteLine($"Error HTTP: {response.StatusCode}");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en GetFileAsync: {ex.Message}");
+                throw;
+            }
+        }
+
+        // Clase para contener la respuesta del archivo
+        public class FileResponse
+        {
+            public byte[] FileContent { get; set; }
+            public string Filename { get; set; }
+            public string ContentType { get; set; }
+        }
     }
 }

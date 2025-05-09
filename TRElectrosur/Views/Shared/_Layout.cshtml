@@ -429,12 +429,15 @@
                     <span class="nav-text">Términos de Referencia</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" asp-area="Index" asp-controller="Usuarios" asp-action="Index">
-                    <i class="fas fa-users nav-icon"></i>
-                    <span class="nav-text">Usuarios</span>
-                </a>
-            </li>
+            @if (Context.Session.GetInt32("RoleId") == 1)
+            {
+                <li class="nav-item">
+                    <a class="nav-link" asp-area="Index" asp-controller="Usuarios" asp-action="Index">
+                        <i class="fas fa-users nav-icon"></i>
+                        <span class="nav-text">Usuarios</span>
+                    </a>
+                </li>
+            }
         </ul>
         
         <a href="/Home/Logout" class="logout-btn" style="color:white;">
