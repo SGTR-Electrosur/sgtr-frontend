@@ -9,5 +9,6 @@ namespace TRElectrosur.Models
         public bool IsAdmin { get; set; }
         public bool CanEdit { get; set; }
         public int? UserRoleId { get; set; }
+        public string RawFieldsData { get; set; }
     }
 }

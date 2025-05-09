@@ -74,7 +74,7 @@ namespace TRElectrosur.Controllers
             }
         }
 
-        public async Task<IActionResult> Editar(int id, int? versionId = null)
+        public async Task<IActionResult> Editar(int id)
         {
             try
             {
@@ -89,7 +89,7 @@ namespace TRElectrosur.Controllers
                     return RedirectToAction("Index");
                 }
 
-                // Obtener información adicional si es necesario
+                // Obtener información adicional
                 var tdrEstates = await _apiService.GetAsync<List<TDRState>>("/api/catalogs/tdrEstates", token);
                 var tdrTypes = await _apiService.GetAsync<List<TDRType>>("/api/catalogs/tdrTypes", token);
 
@@ -109,30 +109,19 @@ namespace TRElectrosur.Controllers
                 // Obtener todas las versiones de este TDR
                 var versiones = await _apiService.GetAsync<List<TDRVersion>>($"/api/tdrs/{id}/versions", token);
 
-                // Determinar la versión actual a mostrar
-                int currentVersionId = versionId ?? tdr.CurrentVersionID ?? 0;
-
-                // Determinar si el usuario puede editar según el estado y rol
-                bool canEdit = false;
-                if (userRoleId == 1) // Admin puede editar en cualquier estado
-                {
-                    canEdit = true;
-                }
-                else // Usuario normal 
-                {
-                    // Solo puede editar en estado Borrador (1) o Observado (3)
-                    canEdit = tdr.CurrentStateID == 1 || tdr.CurrentStateID == 3;
-                }
+                // Obtener los campos directamente (sin intentar deserializar a tipo dinámico)
+                var fieldsResponseStr = await _apiService.GetStringAsync($"/api/tdrs/{id}/fields", token);
 
                 // Crear el ViewModel
                 var viewModel = new TDREditViewModel
                 {
                     TDR = tdr,
                     Versiones = versiones ?? new List<TDRVersion>(),
-                    VersionActual = currentVersionId,
-                    IsAdmin = userRoleId == 1, // 1 = admin, 2 = usuario
-                    CanEdit = canEdit,
-                    UserRoleId = userRoleId
+                    VersionActual = tdr.CurrentVersionID ?? 0,
+                    IsAdmin = userRoleId == 1,
+                    CanEdit = false,
+                    UserRoleId = userRoleId,
+                    RawFieldsData = fieldsResponseStr // Guardar los datos crudos como string
                 };
 
                 return View(viewModel);
@@ -174,139 +163,74 @@ namespace TRElectrosur.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Guardar(int id, int versionId, Dictionary<string, string> fields, Dictionary<string, string> observations = null)
+        public async Task<IActionResult> Guardar(int id, Dictionary<string, string> fields, Dictionary<string, string> observations)
         {
             try
             {
                 string token = _authService.GetToken();
                 int? userRoleId = _authService.GetRoleId();
-                bool success = true;
-                List<string> errors = new List<string>();
+                bool isAdmin = userRoleId == 1;
 
-                _logger.LogInformation($"Guardando TDR ID: {id}, Versión: {versionId}, Campos: {fields.Count}, Observaciones: {observations?.Count ?? 0}");
+                _logger.LogInformation($"Guardando TDR ID: {id}, Campos: {fields.Count}, Observaciones: {observations?.Count ?? 0}");
 
-                // Verificar que el usuario tiene permisos para guardar
-                var tdr = await _apiService.GetAsync<TDR>($"/api/tdrs/{id}", token);
-                if (tdr == null)
+                // Primero obtenemos la información del TDR
+                var fieldsData = await _apiService.GetStringAsync($"/api/tdrs/{id}/fields", token);
+                if (string.IsNullOrEmpty(fieldsData))
                 {
-                    TempData["ErrorMessage"] = "TDR no encontrado";
-                    return RedirectToAction("Editar", new { id = id, versionId = versionId });
+                    TempData["ErrorMessage"] = "No se pudo obtener la información actual del TDR";
+                    return RedirectToAction("Editar", new { id = id });
                 }
 
-                bool canEdit = false;
-                if (userRoleId == 1) // Admin puede editar en cualquier estado
+                // Parseamos el JSON para obtener los fieldIDs
+                var fieldsDoc = System.Text.Json.JsonDocument.Parse(fieldsData);
+                var fieldsArray = fieldsDoc.RootElement.GetProperty("fields");
+
+                // Preparamos la lista de campos a actualizar
+                var updateList = new List<Dictionary<string, object>>();
+
+                foreach (var fieldElement in fieldsArray.EnumerateArray())
                 {
-                    canEdit = true;
-                }
-                else // Usuario normal 
-                {
-                    // Solo puede editar en estado Borrador (1) o Observado (3)
-                    canEdit = tdr.CurrentStateID == 1 || tdr.CurrentStateID == 3;
-                }
+                    string fieldName = fieldElement.GetProperty("FieldName").GetString();
+                    int fieldId = fieldElement.GetProperty("FieldID").GetInt32();
 
-                if (!canEdit)
-                {
-                    TempData["ErrorMessage"] = "No tiene permisos para modificar este TDR en su estado actual";
-                    return RedirectToAction("Editar", new { id = id, versionId = versionId });
-                }
-
-                // Obtener primero los campos actuales para tener los IDs correctos
-                var fieldsResponse = await _apiService.GetAsync<List<TDRVersionField>>($"/api/tdrs/{id}/versions/{versionId}/fields", token);
-
-                if (fieldsResponse == null)
-                {
-                    _logger.LogError($"No se pudo obtener la lista de campos para el TDR {id}, versión {versionId}");
-                    TempData["ErrorMessage"] = "Error al obtener los campos del TDR";
-                    return RedirectToAction("Editar", new { id = id, versionId = versionId });
-                }
-
-                // Guardar cada campo modificado
-                foreach (var field in fields)
-                {
-                    string fieldName = field.Key;
-                    string htmlContent = field.Value;
-
-                    // Buscar el campo por nombre
-                    var fieldToUpdate = fieldsResponse.FirstOrDefault(f => f.FieldName == fieldName);
-
-                    if (fieldToUpdate != null)
+                    // Si el campo está en los datos enviados por el formulario
+                    if (fields.ContainsKey(fieldName))
                     {
-                        _logger.LogInformation($"Actualizando campo {fieldName} (ID: {fieldToUpdate.FieldID})");
+                        var fieldData = new Dictionary<string, object>
+                {
+                    { "fieldId", fieldId },
+                    { "htmlContent", fields[fieldName] }
+                };
 
-                        // Preparar el objeto de actualización
-                        var updateRequest = new { htmlContent = htmlContent };
-
-                        // Actualizar el campo
-                        var response = await _apiService.PutAsync<dynamic>(
-                            $"/api/tdrs/{id}/versions/{versionId}/fields/{fieldToUpdate.FieldID}",
-                            updateRequest,
-                            token);
-
-                        if (response == null)
+                        // Si hay observaciones y el usuario es admin
+                        if (isAdmin && observations != null && observations.ContainsKey(fieldName))
                         {
-                            success = false;
-                            errors.Add($"Error al actualizar el campo {fieldName}");
-                            _logger.LogError($"Error al actualizar el campo {fieldName} del TDR {id}");
+                            fieldData.Add("comment", observations[fieldName]);
                         }
-                    }
-                    else
-                    {
-                        _logger.LogWarning($"No se encontró el campo {fieldName} en la lista de campos del TDR {id}, versión {versionId}");
+
+                        updateList.Add(fieldData);
                     }
                 }
 
-                // Si es admin y hay observaciones, guardarlas
-                if (userRoleId == 1 && observations != null && observations.Count > 0)
+                // Enviamos la lista al API
+                var response = await _apiService.PutAsync<dynamic>($"/api/tdrs/{id}/fields", updateList, token);
+
+                if (response != null)
                 {
-                    _logger.LogInformation($"Guardando {observations.Count} observaciones como administrador");
-
-                    foreach (var obs in observations)
-                    {
-                        string fieldName = obs.Key;
-                        string comment = obs.Value;
-
-                        if (string.IsNullOrWhiteSpace(comment))
-                        {
-                            continue; // No guardar observaciones vacías
-                        }
-
-                        // Buscar el campo correspondiente
-                        var fieldToUpdate = fieldsResponse.FirstOrDefault(f => f.FieldName == fieldName);
-
-                        if (fieldToUpdate != null && fieldToUpdate.VersionFieldID > 0)
-                        {
-                            _logger.LogInformation($"Guardando observación para campo {fieldName} (ID: {fieldToUpdate.FieldID})");
-
-                            // Las observaciones se guardarían mediante una llamada a la API de revisión
-                            // Por ahora solo lo registramos en el log ya que no vamos a implementar esta funcionalidad todavía
-                            _logger.LogInformation($"Contenido de la observación: {comment}");
-
-                            // TODO: Implementar cuando se active la funcionalidad de observaciones
-                            // var reviewRequest = new { reviewStatus = "observado", comment = comment };
-                            // var response = await _apiService.PostAsync<dynamic>(
-                            //    $"/api/tdrs/{id}/versions/{versionId}/fields/{fieldToUpdate.FieldID}/review",
-                            //    reviewRequest,
-                            //    token);
-                        }
-                    }
-                }
-
-                if (success)
-                {
-                    TempData["SuccessMessage"] = "Cambios guardados correctamente";
+                    TempData["SuccessMessage"] = "Información actualizada correctamente";
+                    return RedirectToAction("Index");
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = string.Join(". ", errors);
+                    TempData["ErrorMessage"] = "No se pudo actualizar la información del TDR";
+                    return RedirectToAction("Editar", new { id = id });
                 }
-
-                return RedirectToAction("Editar", new { id = id, versionId = versionId });
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error al guardar cambios: {ex.Message}");
-                TempData["ErrorMessage"] = "Error al guardar los cambios";
-                return RedirectToAction("Editar", new { id = id, versionId = versionId });
+                _logger.LogError($"Error al guardar TDR: {ex.Message}");
+                TempData["ErrorMessage"] = "Error al guardar los cambios: " + ex.Message;
+                return RedirectToAction("Editar", new { id = id });
             }
         }
 
