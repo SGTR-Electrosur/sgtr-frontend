@@ -1,14 +1,22 @@
 ﻿@model TRElectrosur.Models.TDR
 @{
     ViewData["Title"] = "Editar Término de Referencia";
-    
-    // Lista de versiones disponibles (vendrá del controlador)
+
+    // Lista de versiones disponibles
     var versiones = ViewBag.Versiones ?? new List<object>();
-    
+
     // Estado actual del TDR
     var estadoActual = Model.CurrentStateName;
     var estadoID = Model.CurrentStateID;
     var esAprobado = estadoID == 5;
+
+    // Información de permisos
+    bool isAdmin = ViewBag.IsAdmin ?? false;
+    bool canEdit = ViewBag.CanEdit ?? false;
+
+    // Determinar si es usuario puede editar cada tipo de campo
+    bool puedeEditarCamposNormales = canEdit;
+    bool puedeEditarObservaciones = isAdmin;
 }
 
 <div class="container-fluid px-0">
@@ -137,15 +145,9 @@
                         <!-- Campo 2: Órgano y/o Unidad Orgánica -->
                         <div class="row mb-4">
                             <div class="col-md-12">
-                                <label for="field_organoUnidadOrganica" class="form-label">2. Órgano y/o Unidad Orgánica</label>
-                                <textarea id="field_organoUnidadOrganica" name="fields[organoUnidadOrganica]" class="form-control" rows="2" @(esAprobado ? "readonly" : "")></textarea>
+                                <label for="field_organoUnidadOrganica" class="form-label">Órgano y/o Unidad Orgánica</label>
+                                <textarea id="field_organoUnidadOrganica" name="fields[organoUnidadOrganica]" class="form-control" rows="2" @((!canEdit && !isAdmin) || (esAprobado && !isAdmin) ? "readonly" : "")></textarea>
                                 <div class="form-text">INDICAR EL ÓRGANO Y/O UNIDAD ORGÁNICA, RESPONSABLE DEL REQUERIMIENTO</div>
-                                
-                                <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
                             </div>
                         </div>
 
@@ -157,10 +159,21 @@
                                 <div class="form-text">INDICAR EL CÓDIGO Y LA DENOMINACIÓN DEL PLAN POI</div>
                                 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
 
@@ -172,10 +185,21 @@
                                 <div class="form-text">INDICAR LA DENOMINACIÓN DEL REQUERIMIENTO DE CONTRATACIÓN</div>
                                 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
 
@@ -188,10 +212,21 @@
                                 <div class="form-text">INDICAR QUÉ SE BUSCA SATISFACER, MEJORAR Y/O ATENDER CON LA CONTRATACIÓN REQUERIDA</div>
                                 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
 
@@ -204,10 +239,21 @@
                                 <div class="form-text">INDICAR CUÁL ES EL OBJETIVO DE LA CONTRATACIÓN QUE PERMITA CONOCER AL PROVEEDOR CLARAMENTE QUÉ BENEFICIOS PRETENDE OBTENER MEDIANTE EL PRESENTE SERVICIO</div>
                                 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -233,10 +279,21 @@
                                 <textarea id="field_alcancesServicio" name="fields[alcancesServicio]" class="d-none"></textarea>
                                 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -258,10 +315,21 @@
                                 <textarea id="field_reglamentos" name="fields[reglamentos]" class="d-none"></textarea>
                                 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -283,10 +351,21 @@
                                 <textarea id="field_seguros" name="fields[seguros]" class="d-none"></textarea>
                                 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -308,10 +387,21 @@
                                 <textarea id="field_prestacionesAccesorias" name="fields[prestacionesAccesorias]" class="d-none"></textarea>
                                 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -337,10 +427,21 @@
                                 <textarea id="field_requisitosProveedor" name="fields[requisitosProveedor]" class="d-none"></textarea>
                                 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -364,10 +465,21 @@
                                 <textarea id="field_experienciaProveedor" name="fields[experienciaProveedor]" class="d-none"></textarea>
                                 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -385,10 +497,21 @@
                                 <textarea id="field_perfilPersonal" name="fields[perfilPersonal]" class="d-none"></textarea>
                                 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -411,10 +534,21 @@
                                 <textarea id="field_formacionAcademica" name="fields[formacionAcademica]" class="d-none"></textarea>
                                 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -437,10 +571,21 @@
                                 <textarea id="field_experienciaPersonalClave" name="fields[experienciaPersonalClave]" class="d-none"></textarea>
                                 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -463,10 +608,21 @@
                                 <textarea id="field_capacitacion" name="fields[capacitacion]" class="d-none"></textarea>
                                 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -484,10 +640,21 @@
                                 <textarea id="field_otros" name="fields[otros]" class="d-none"></textarea>
                                 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -513,10 +680,21 @@
                                 <textarea id="field_lugar" name="fields[lugar]" class="d-none"></textarea>
                                 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -539,10 +717,21 @@
                                 <textarea id="field_plazo" name="fields[plazo]" class="d-none"></textarea>
                                 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -566,10 +755,21 @@
                                 <textarea id="field_entregables" name="fields[entregables]" class="d-none"></textarea>
 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -592,10 +792,21 @@
                                 <textarea id="field_plazoLugar" name="fields[plazoLugar]" class="d-none"></textarea>
 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -618,10 +829,21 @@
                                 <textarea id="field_conformidad" name="fields[conformidad]" class="d-none"></textarea>
 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -647,10 +869,21 @@
                                 <textarea id="field_sistemaContratacion" name="fields[sistemaContratacion]" class="d-none"></textarea>
 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -673,10 +906,21 @@
                                 <textarea id="field_formaCondicionesPago" name="fields[formaCondicionesPago]" class="d-none"></textarea>
 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -699,10 +943,21 @@
                                 <textarea id="field_responsabilidad" name="fields[responsabilidad]" class="d-none"></textarea>
 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -725,10 +980,21 @@
                                 <textarea id="field_otrasPenalidades" name="fields[otrasPenalidades]" class="d-none"></textarea>
 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -751,10 +1017,21 @@
                                 <textarea id="field_medidasSeguridad" name="fields[medidasSeguridad]" class="d-none"></textarea>
 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -772,10 +1049,21 @@
                                 <textarea id="field_clausula" name="fields[clausula]" class="d-none"></textarea>
 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -793,10 +1081,21 @@
                                 <textarea id="field_anexos" name="fields[anexos]" class="d-none"></textarea>
 
                                 <!-- Campo de observación -->
-                                <div class="mt-2">
-                                    <label class="form-label text-danger">Observación:</label>
-                                    <textarea class="form-control bg-light" readonly></textarea>
-                                </div>
+                                @if (isAdmin || estadoID == 3)
+                                {
+                                    <div class="mt-2 observacion-container @(isAdmin ? "admin-observacion" : "")">
+                                        <label class="form-label text-danger">Observación:</label>
+                                        @if (isAdmin)
+                                        {
+                                            <div id="editor_obs_finalidadPublica"></div>
+                                            <textarea id="field_obs_finalidadPublica" name="observations[finalidadPublica]" class="d-none"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control bg-light" readonly></textarea>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -811,7 +1110,7 @@
             </button>
 
             <div>
-                @if (!esAprobado)
+                @if (canEdit)
                 {
                     <!-- Botones contextuales según estado -->
                     @if (Model.CurrentStateID == 1) // Borrador
@@ -832,12 +1131,31 @@
                             <i class="fas fa-save me-1"></i> Guardar Cambios
                         </button>
                     }
-                    else if (Model.CurrentStateID == 2 || Model.CurrentStateID == 4) // Pendiente de Revisión o Pendiente de Revisión Corregida
+                    else if ((Model.CurrentStateID == 2 || Model.CurrentStateID == 4) && isAdmin) // Pendiente de Revisión o Pendiente de Revisión Corregida (solo admin)
                     {
-                        <button type="button" class="btn btn-danger me-2" id="btnCancelarRevision">
-                            <i class="fas fa-undo me-1"></i> Cancelar Revisión
+                        <button type="button" class="btn btn-success me-2" id="btnAprobar">
+                            <i class="fas fa-check me-1"></i> Aprobar TDR
+                        </button>
+                        <button type="button" class="btn btn-danger me-2" id="btnRechazar">
+                            <i class="fas fa-times me-1"></i> Observar TDR
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="btnGuardar" style="background-color: #2a3c7d; border-color: #2a3c7d;">
+                            <i class="fas fa-save me-1"></i> Guardar Cambios
                         </button>
                     }
+                    else if (Model.CurrentStateID == 5 && isAdmin) // Aprobado (solo admin puede modificar)
+                    {
+                        <button type="submit" class="btn btn-primary" id="btnGuardar" style="background-color: #2a3c7d; border-color: #2a3c7d;">
+                            <i class="fas fa-save me-1"></i> Guardar Cambios
+                        </button>
+                    }
+                }
+                else
+                {
+                    <!-- Si es solo visualización, mostrar algún indicador -->
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-info-circle me-2"></i> El TDR está en modo de solo lectura en su estado actual.
+                    </div>
                 }
             </div>
         </div>
@@ -906,33 +1224,31 @@
 </div>
 
 @section Scripts {
-    <!-- CKEditor 5 -->
-    <script src="https://cdn.ckeditor.com/ckeditor5/37.1.0/classic/ckeditor.js"></script>
 
     <script>
         // Variables para los editores
         let editores = {};
-        let tabActual = 0;
-        const tabs = ['info-general-tab', 'alcances-tab', 'requisitos-tab', 'entregables-tab', 'condiciones-tab'];
-        let esAprobado = @(esAprobado ? "true" : "false");
 
         $(document).ready(function () {
-            // Inicializar CKEditor para los campos de texto enriquecido
+            console.log("Inicializando...");
+
+            // Inicializar los editores
             inicializarEditores();
 
-            // Manejar la navegación entre pestañas
-            configurarNavegacion();
-
-            // Configurar los botones de acciones
+            // Configurar botones
             configurarBotones();
 
-            // Cargar los datos de los campos
-            cargarCampos();
+            // Cargar datos después que los editores estén listos
+            setTimeout(function () {
+                cargarDatosCampos();
+            }, 1000);
         });
 
         function inicializarEditores() {
-            // Lista de campos que necesitan editor WYSIWYG
-            const camposEditor = [
+            console.log("Inicializando editores...");
+
+            // Lista de campos que necesitan editor
+            const camposConEditor = [
                 'finalidadPublica', 'objetivoContratacion', 'alcancesServicio', 'reglamentos',
                 'seguros', 'prestacionesAccesorias', 'requisitosProveedor', 'experienciaProveedor',
                 'perfilPersonal', 'formacionAcademica', 'experienciaPersonalClave', 'capacitacion',
@@ -941,214 +1257,296 @@
                 'medidasSeguridad', 'clausula', 'anexos'
             ];
 
-            // Inicializar cada editor
-            camposEditor.forEach(campo => {
-                ClassicEditor.create(document.getElementById('editor_' + campo), {
-                    toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'insertTable', 'undo', 'redo']
-                })
-                    .then(editor => {
-                        editores[campo] = editor;
+            // Crear cada editor
+            camposConEditor.forEach(function (campo) {
+                const editorElement = document.getElementById('editor_' + campo);
 
-                        // Si está aprobado, desactivar la edición
-                        if (esAprobado) {
-                            editor.isReadOnly = true;
-                        }
-
-                        // Actualizar el textarea oculto al cambiar el contenido
-                        editor.model.document.on('change:data', () => {
-                            document.getElementById('field_' + campo).value = editor.getData();
-                        });
+                if (editorElement) {
+                    ClassicEditor.create(editorElement, {
+                        toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'insertTable', 'undo', 'redo']
                     })
-                    .catch(error => {
-                        console.error(`Error al inicializar el editor ${campo}:`, error);
-                    });
-            });
-        }
+                        .then(editor => {
+                            editores[campo] = editor;
 
-        function configurarNavegacion() {
-            // Al cambiar de pestaña manualmente
-            $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
-                tabActual = tabs.indexOf(e.target.id);
+                            // Solo para administradores o estados específicos
+                            const puedeEditar = @(isAdmin ? "true" : "false") ||
+                                (@Model.CurrentStateID == 1 || @Model.CurrentStateID == 3 ? "true" : "false");
 
-                // Actualizar color de las pestañas
-                $('button[data-bs-toggle="tab"]').css('color', '#495057');
-                $(this).css('color', '#2a3c7d');
-            });
-        }
+                            editor.isReadOnly = !puedeEditar;
 
-        function configurarBotones() {
-            // Botón de enviar a revisión
-            $('#btnEnviarRevision').on('click', function () {
-                $('#modalEnviarRevision').modal('show');
-            });
-
-            // Confirmar envío a revisión
-            $('#btnConfirmarEnviarRevision').on('click', function () {
-                cambiarEstadoTDR(2); // Cambiar a "Pendiente de Revisión"
-            });
-
-            // Botón de enviar corrección
-            $('#btnEnviarRevisionCorregida').on('click', function () {
-                $('#modalEnviarCorrecion').modal('show');
-            });
-
-            // Confirmar envío de corrección
-            $('#btnConfirmarEnviarCorreccion').on('click', function () {
-                cambiarEstadoTDR(4); // Cambiar a "Pendiente de Revisión Corregida"
-            });
-
-            // Botón de cancelar revisión
-            $('#btnCancelarRevision').on('click', function () {
-                $('#modalCancelarRevision').modal('show');
-            });
-
-            // Confirmar cancelación de revisión
-            $('#btnConfirmarCancelarRevision').on('click', function () {
-                cambiarEstadoTDR(1); // Volver a "Borrador"
-            });
-
-            // Botón cargar versión
-            $('#btnCargarVersion').on('click', function () {
-                var versionId = $('#versionSelector').val();
-                window.location.href = '@Url.Action("Editar", "TerminosReferencia", new { id = Model.TDRID })' + '?versionId=' + versionId;
-            });
-        }
-
-        function cambiarEstadoTDR(nuevoEstadoId) {
-            // Guardar primero los cambios
-            guardarCampos().then(() => {
-                // Luego enviar la solicitud para cambiar el estado
-                $.ajax({
-                    url: '@Url.Action("CambiarEstado", "TerminosReferencia", new { id = Model.TDRID })',
-                    type: 'POST',
-                    data: {
-                        newStateId: nuevoEstadoId,
-                        reason: ''
-                    },
-                    success: function (response) {
-                        // Cerrar el modal correspondiente
-                        $('.modal').modal('hide');
-
-                        // Mostrar mensaje de éxito
-                        showToast('Éxito', 'El estado del TDR ha sido actualizado', 'success');
-
-                        // Recargar la página después de un breve retraso
-                        setTimeout(function () {
-                            location.reload();
-                        }, 1500);
-                    },
-                    error: function (xhr, status, error) {
-                        // Mostrar mensaje de error
-                        showToast('Error', 'No se pudo cambiar el estado del TDR', 'error');
-                    }
-                });
-            });
-        }
-
-        function guardarCampos() {
-            return new Promise((resolve, reject) => {
-                // Preparar todos los datos de los editores
-                for (const [campo, editor] of Object.entries(editores)) {
-                    document.getElementById('field_' + campo).value = editor.getData();
+                            // Actualizar textarea oculto al cambiar
+                            editor.model.document.on('change:data', () => {
+                                document.getElementById('field_' + campo).value = editor.getData();
+                            });
+                        })
+                        .catch(error => {
+                            console.error("Error al crear editor para " + campo, error);
+                        });
+                } else {
+                    console.warn("No se encontró elemento para el editor: " + campo);
                 }
-
-                // Convertir el formulario a un objeto FormData
-                const formData = new FormData(document.getElementById('formEditarTDR'));
-
-                // Enviar los datos mediante AJAX
-                $.ajax({
-                    url: $('#formEditarTDR').attr('action'),
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function (response) {
-                        resolve(response);
-                    },
-                    error: function (xhr, status, error) {
-                        reject(error);
-                    }
-                });
             });
         }
 
-        function cargarCampos() {
-            // Obtener los campos del TDR para la versión actual
+        function cargarDatosCampos() {
+            console.log("Cargando datos de los campos...");
+
             $.ajax({
                 url: '@Url.Action("ObtenerCampos", "TerminosReferencia", new { id = Model.TDRID, versionId = ViewBag.VersionActual })',
                 type: 'GET',
-                success: function (camposData) {
-                    // Recorrer los campos recibidos y llenar los correspondientes campos en el formulario
-                    camposData.forEach(campo => {
-                        const fieldName = campo.FieldName;
-                        const htmlContent = campo.HtmlContent || '';
-                        const observacion = campo.lastReview && campo.lastReview.Comment ? campo.lastReview.Comment : '';
+                success: function (data) {
+                    console.log("Datos recibidos:", data);
 
-                        // Buscar el campo correspondiente
+                    // Procesar cada campo
+                    data.forEach(function (campo) {
+                        const fieldName = campo.FieldName;
+                        const content = campo.HtmlContent || '';
+
+                        console.log(`Campo ${fieldName} (ID: ${campo.FieldID}): ${content ? "Tiene contenido" : "Vacío"}`);
+
+                        // Actualizar el editor si existe
                         if (editores[fieldName]) {
-                            // Para editores CKEditor
-                            editores[fieldName].setData(htmlContent);
-                            // Actualizar el textarea oculto también
-                            document.getElementById('field_' + fieldName).value = htmlContent;
-                        } else {
-                            // Para campos de texto normal
-                            const inputField = document.getElementById('field_' + fieldName);
-                            if (inputField) {
-                                inputField.value = htmlContent;
-                            }
+                            console.log(`Estableciendo contenido en editor ${fieldName}`);
+                            editores[fieldName].setData(content);
                         }
 
-                        // Actualizar el campo de observación si existe
-                        const fieldObservation = $(`#field_${fieldName}`).closest('.row').find('.text-danger').next('textarea');
-                        if (fieldObservation.length > 0) {
-                            fieldObservation.val(observacion);
+                        // También actualizar el campo hidden
+                        const hiddenField = document.getElementById('field_' + fieldName);
+                        if (hiddenField) {
+                            hiddenField.value = content;
+                        }
+
+                        // Si es un textarea normal
+                        const textareaField = document.querySelector(`textarea[name="fields[${fieldName}]"]`);
+                        if (textareaField && !textareaField.classList.contains('d-none')) {
+                            textareaField.value = content;
                         }
                     });
                 },
                 error: function (xhr, status, error) {
-                    console.error('Error al cargar los campos:', error);
-                    showToast('Error', 'No se pudieron cargar los campos del TDR', 'error');
+                    console.error("Error al cargar datos:", error);
+                    alert("Error al cargar los datos. Por favor, intente nuevamente.");
                 }
             });
         }
 
-        // Función para mostrar toast
-        function showToast(title, message, type) {
-            // Si ya existe un contenedor de toasts, úsalo; de lo contrario, créalo
-            if ($('#toast-container').length === 0) {
-                $('body').append('<div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index: 1100;"></div>');
-            }
+        function configurarBotones() {
+            // Botón Guardar
+            $('#btnGuardar').on('click', function (e) {
+                e.preventDefault();
+                guardarTodosLosCampos();
+            });
 
-            // Generar un ID único para el toast
-            const toastId = 'toast-' + Date.now();
+            // Otros botones de configuración...
+            $('#btnEnviarRevision').on('click', function () {
+                $('#modalEnviarRevision').modal('show');
+            });
 
-            // Definir la clase de estilo según el tipo de toast
-            let bgClass = 'bg-primary';
-            if (type === 'success') bgClass = 'bg-success';
-            if (type === 'error') bgClass = 'bg-danger';
-            if (type === 'warning') bgClass = 'bg-warning text-dark';
+            $('#btnConfirmarEnviarRevision').on('click', function () {
+                cambiarEstadoTDR(2);
+            });
 
-            // Crear el HTML del toast
-            const toastHtml = `
-                        <div id="${toastId}" class="toast align-items-center ${bgClass} text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
-                            <div class="d-flex">
-                                <div class="toast-body">
-                                    <strong>${title}</strong>: ${message}
+            // ... más configuraciones de botones
+        }
+
+        function guardarTodosLosCampos() {
+            console.log("Guardando todos los campos...");
+
+            // Primero obtenemos la lista de campos del servidor
+            $.ajax({
+                url: '@Url.Action("ObtenerCampos", "TerminosReferencia", new { id = Model.TDRID, versionId = ViewBag.VersionActual })',
+                type: 'GET',
+                success: function (camposData) {
+                    console.log("Lista de campos obtenida:", camposData);
+
+                    // Array para llevar el conteo
+                    let pendientes = camposData.length;
+                    let exitosos = 0;
+                    let fallidos = 0;
+
+                    // Mostrar progreso
+                    mostrarProgreso("Guardando cambios...");
+
+                    // Guardar cada campo individualmente
+                    camposData.forEach(function (campo) {
+                        const fieldId = campo.FieldID;
+                        const fieldName = campo.FieldName;
+                        let content = "";
+
+                        // Obtener el contenido del editor o del textarea
+                        if (editores[fieldName]) {
+                            content = editores[fieldName].getData();
+                        } else {
+                            const textareaField = document.querySelector(`textarea[name="fields[${fieldName}]"]`);
+                            if (textareaField) {
+                                content = textareaField.value;
+                            }
+                        }
+
+                        console.log(`Guardando campo ${fieldName} (ID: ${fieldId}): ${content ? content.substring(0, 50) + "..." : "Vacío"}`);
+
+                        // Enviar solicitud para actualizar el campo
+                        $.ajax({
+                            url: '@Url.Action("GuardarCampo", "TerminosReferencia")',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify({
+                                tdrId: @Model.TDRID,
+                                versionId: @ViewBag.VersionActual,
+                                fieldId: fieldId,
+                                htmlContent: content
+                            }),
+                            success: function () {
+                                console.log(`Campo ${fieldName} guardado correctamente`);
+                                exitosos++;
+                                procesarCompletado();
+                            },
+                            error: function (xhr, status, errorMsg) {
+                                console.error(`Error al guardar campo ${fieldName}:`, errorMsg);
+                                fallidos++;
+                                procesarCompletado();
+                            }
+                        });
+                    });
+
+                    // Función para controlar cuando todos los campos se han procesado
+                    function procesarCompletado() {
+                        pendientes--;
+
+                        actualizarProgreso(Math.round(((camposData.length - pendientes) / camposData.length) * 100));
+
+                        if (pendientes <= 0) {
+                            ocultarProgreso();
+
+                            if (fallidos === 0) {
+                                mostrarMensaje("Éxito", `Se guardaron correctamente todos los campos (${exitosos}).`, "success");
+                            } else if (exitosos > 0) {
+                                mostrarMensaje("Advertencia", `Se guardaron ${exitosos} campos, pero fallaron ${fallidos}.`, "warning");
+                            } else {
+                                mostrarMensaje("Error", "No se pudo guardar ningún campo.", "danger");
+                            }
+                        }
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error al obtener lista de campos:", error);
+                    mostrarMensaje("Error", "No se pudo obtener la lista de campos para guardar.", "danger");
+                }
+            });
+        }
+
+        function cambiarEstadoTDR(nuevoEstadoId) {
+            $.ajax({
+                url: '@Url.Action("CambiarEstado", "TerminosReferencia", new { id = Model.TDRID })',
+                type: 'POST',
+                data: {
+                    newStateId: nuevoEstadoId,
+                    reason: ''
+                },
+                success: function (response) {
+                    $('.modal').modal('hide');
+                    mostrarMensaje("Éxito", "El estado del TDR ha sido actualizado", "success");
+
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1500);
+                },
+                error: function (xhr, status, error) {
+                    mostrarMensaje("Error", "No se pudo cambiar el estado del TDR", "danger");
+                }
+            });
+        }
+
+        // Funciones de utilidad
+        function mostrarProgreso(mensaje) {
+            if (!$('#progressModal').length) {
+                $('body').append(`
+                        <div class="modal fade" id="progressModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Progreso</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p id="progressMessage">${mensaje}</p>
+                                        <div class="progress">
+                                            <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                             </div>
                         </div>
-                    `;
+                    `);
+            } else {
+                $('#progressMessage').text(mensaje);
+                $('#progressBar').css('width', '0%');
+            }
 
-            // Añadir el toast al contenedor
-            $('#toast-container').append(toastHtml);
+            const progressModal = new bootstrap.Modal(document.getElementById('progressModal'));
+            progressModal.show();
+        }
 
-            // Inicializar y mostrar el toast
-            const toastElement = document.getElementById(toastId);
-            const toast = new bootstrap.Toast(toastElement, {
-                delay: 5000
-            });
-            toast.show();
+        function actualizarProgreso(porcentaje) {
+            $('#progressBar').css('width', porcentaje + '%');
+            $('#progressBar').text(porcentaje + '%');
+        }
+
+        function ocultarProgreso() {
+            const progressModal = bootstrap.Modal.getInstance(document.getElementById('progressModal'));
+            if (progressModal) {
+                progressModal.hide();
+            }
+        }
+
+        function mostrarMensaje(titulo, mensaje, tipo) {
+            if (!$('#alertModal').length) {
+                $('body').append(`
+                        <div class="modal fade" id="alertModal" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-${tipo} text-white">
+                                        <h5 class="modal-title" id="alertTitle">${titulo}</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p id="alertMessage">${mensaje}</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+            } else {
+                $('#alertTitle').text(titulo);
+                $('#alertMessage').text(mensaje);
+                $('.modal-header').removeClass('bg-success bg-danger bg-warning').addClass('bg-' + tipo);
+            }
+
+            const alertModal = new bootstrap.Modal(document.getElementById('alertModal'));
+            alertModal.show();
         }
     </script>
+
 }
+<style>
+    .observacion-container {
+        background-color: #fff8f8;
+        border-left: 3px solid #dc3545;
+        padding: 10px;
+        border-radius: 0.25rem;
+        margin-top: 10px;
+    }
+
+    .admin-observacion {
+        background-color: #f8f9fa;
+        border-left: 3px solid #6c757d;
+    }
+
+    /* Estilo para indicar que hay observaciones */
+    .has-observation {
+        border-left: 3px solid #dc3545;
+        box-shadow: 0 0 5px rgba(220, 53, 69, 0.25);
+    }
+</style>

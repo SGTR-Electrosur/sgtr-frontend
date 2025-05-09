@@ -145,16 +145,14 @@ namespace TRElectrosur.Services
                 }
 
                 var response = await _httpClient.PutAsync($"{_baseUrl}{endpoint}", content);
-
                 var responseContent = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Respuesta PUT recibida: {responseContent}, StatusCode: {response.StatusCode}");
+
+                Console.WriteLine($"Respuesta PUT: {responseContent}, StatusCode: {response.StatusCode}");
 
                 if (response.IsSuccessStatusCode)
                 {
-                    // Si la respuesta está vacía o no es un JSON válido y es un código de éxito, devolvemos un objeto por defecto
                     if (string.IsNullOrWhiteSpace(responseContent) || responseContent == "{}")
                     {
-                        // Si el tipo T es object, devolver un objeto simple
                         var typeofT = typeof(T);
                         if (typeofT == typeof(object))
                         {
