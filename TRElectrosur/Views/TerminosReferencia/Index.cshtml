@@ -46,7 +46,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Título</th>
-                            <th>Tipo</th>
+                            <!-- Columna de Tipo removida -->
                             <th>Creado por</th>
                             <th>Fecha Creación</th>
                             <th>Última Actualización</th>
@@ -62,37 +62,44 @@
                                 <tr>
                                     <td>@tdr.TDRID</td>
                                     <td>@tdr.Title</td>
-                                    <td>@tdr.TDRTypeName</td>
+                                    <!-- Columna de Tipo removida -->
                                     <td>@tdr.CreatedByUserName</td>
                                     <td>@tdr.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
                                     <td>@(tdr.UpdatedAt.HasValue ? tdr.UpdatedAt.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm") : "-")</td>
                                     <td class="text-center">
                                         @{
                                             string badgeClass = "bg-secondary";
+                                            string stateName = "Desconocido";
 
                                             switch (tdr.CurrentStateID)
                                             {
                                                 case 1: // Borrador
                                                     badgeClass = "bg-info";
+                                                    stateName = "Borrador";
                                                     break;
                                                 case 2: // Pendiente de Revisión
                                                     badgeClass = "bg-warning text-dark";
+                                                    stateName = "Pendiente de Revisión";
                                                     break;
                                                 case 3: // Observado
                                                     badgeClass = "bg-danger";
+                                                    stateName = "Observado";
                                                     break;
                                                 case 4: // Pendiente de Revisión Corregida
                                                     badgeClass = "bg-warning text-dark";
+                                                    stateName = "Pendiente de Revisión Corregida";
                                                     break;
                                                 case 5: // Aprobado
                                                     badgeClass = "bg-success";
+                                                    stateName = "Aprobado";
                                                     break;
                                                 case 6: // Anulado
                                                     badgeClass = "bg-dark";
+                                                    stateName = "Anulado";
                                                     break;
                                             }
                                         }
-                                        <span class="badge @badgeClass">@tdr.CurrentStateName</span>
+                                        <span class="badge @badgeClass">@stateName</span>
                                     </td>
                                     <td>
                                         @if (tdr.CurrentStateID == 5) // Si está Aprobado
@@ -114,7 +121,7 @@
                         else
                         {
                             <tr>
-                                <td colspan="8" class="text-center">No hay términos de referencia disponibles</td>
+                                <td colspan="7" class="text-center">No hay términos de referencia disponibles</td>
                             </tr>
                         }
                     </tbody>
@@ -245,6 +252,12 @@
             border-color: #2a3c7d;
         }
 
+        .tipo-tdr-card.selected-tdr-card {
+            border-color: #2a3c7d;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important;
+            background-color: #f8f9fe;
+        }
+
     .badge {
         font-size: 0.85rem;
         font-weight: 500;
@@ -283,8 +296,8 @@
             }
         }
 
-            // Verificar si la tabla ya está inicializada como DataTable
-            if (!$.fn.DataTable.isDataTable('#tablaTDR')) {
+                    // Verificar si la tabla ya está inicializada como DataTable
+                    if (!$.fn.DataTable.isDataTable('#tablaTDR')) {
                 // Inicialización de DataTables
                 $('#tablaTDR').DataTable({
                     language: dataTablesSpanish,
@@ -429,15 +442,15 @@
 
             // Crear el HTML del toast
             const toastHtml = `
-                        <div id="${toastId}" class="toast align-items-center ${bgClass} text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
-                            <div class="d-flex">
-                                <div class="toast-body">
-                                    <strong>${title}</strong>: ${message}
+                                <div id="${toastId}" class="toast align-items-center ${bgClass} text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                                    <div class="d-flex">
+                                        <div class="toast-body">
+                                            <strong>${title}</strong>: ${message}
+                                        </div>
+                                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                                    </div>
                                 </div>
-                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                            </div>
-                        </div>
-                    `;
+                            `;
 
             // Añadir el toast al contenedor
             $('#toast-container').append(toastHtml);
