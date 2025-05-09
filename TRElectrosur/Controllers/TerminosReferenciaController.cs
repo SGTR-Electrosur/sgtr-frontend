@@ -79,7 +79,7 @@ namespace TRElectrosur.Controllers
             try
             {
                 string token = _authService.GetToken();
-                int? userRoleId = _authService.GetRoleId(); // Obtener el rol del usuario actual
+                int? userRoleId = _authService.GetRoleId();
 
                 // Obtener los detalles del TDR
                 var tdr = await _apiService.GetAsync<TDR>($"/api/tdrs/{id}", token);
@@ -94,20 +94,23 @@ namespace TRElectrosur.Controllers
                 var tdrTypes = await _apiService.GetAsync<List<TDRType>>("/api/catalogs/tdrTypes", token);
 
                 // Asignar los nombres a partir de los catálogos
-                tdr.CurrentStateName = tdrEstates?.FirstOrDefault(e => e.StateID == tdr.CurrentStateID)?.StateName ?? "Desconocido";
-                tdr.TDRTypeName = tdrTypes?.FirstOrDefault(t => t.TDRTypeID == tdr.TDRTypeID)?.TypeName ?? "Desconocido";
+                if (tdrEstates != null)
+                {
+                    var estadoActual = tdrEstates.FirstOrDefault(e => e.StateID == tdr.CurrentStateID);
+                    tdr.CurrentStateName = estadoActual?.StateName ?? "Desconocido";
+                }
+
+                if (tdrTypes != null)
+                {
+                    var tipoActual = tdrTypes.FirstOrDefault(t => t.TDRTypeID == tdr.TDRTypeID);
+                    tdr.TDRTypeName = tipoActual?.TypeName ?? "Desconocido";
+                }
 
                 // Obtener todas las versiones de este TDR
                 var versiones = await _apiService.GetAsync<List<TDRVersion>>($"/api/tdrs/{id}/versions", token);
-                ViewBag.Versiones = versiones ?? new List<TDRVersion>();
 
                 // Determinar la versión actual a mostrar
                 int currentVersionId = versionId ?? tdr.CurrentVersionID ?? 0;
-                ViewBag.VersionActual = currentVersionId;
-
-                // Pasar información de permisos a la vista
-                ViewBag.UserRoleId = userRoleId;
-                ViewBag.IsAdmin = userRoleId == 1; // 1 = admin, 2 = usuario
 
                 // Determinar si el usuario puede editar según el estado y rol
                 bool canEdit = false;
@@ -120,9 +123,19 @@ namespace TRElectrosur.Controllers
                     // Solo puede editar en estado Borrador (1) o Observado (3)
                     canEdit = tdr.CurrentStateID == 1 || tdr.CurrentStateID == 3;
                 }
-                ViewBag.CanEdit = canEdit;
 
-                return View(tdr);
+                // Crear el ViewModel
+                var viewModel = new TDREditViewModel
+                {
+                    TDR = tdr,
+                    Versiones = versiones ?? new List<TDRVersion>(),
+                    VersionActual = currentVersionId,
+                    IsAdmin = userRoleId == 1, // 1 = admin, 2 = usuario
+                    CanEdit = canEdit,
+                    UserRoleId = userRoleId
+                };
+
+                return View(viewModel);
             }
             catch (Exception ex)
             {

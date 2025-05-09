@@ -6,6 +6,7 @@
         public int TDRID { get; set; }
         public int VersionNumber { get; set; }
         public int StateID { get; set; }
+        public string StateName { get; set; } // Propiedad agregada
         public DateTime CreatedAt { get; set; }
         public int CreatedByUserID { get; set; }
         public string CreatedByUserName { get; set; }

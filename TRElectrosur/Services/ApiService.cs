@@ -207,5 +207,29 @@ namespace TRElectrosur.Services
                 throw;
             }
         }
+
+        public async Task<string> GetStringAsync(string endpoint, string token = null)
+        {
+            try
+            {
+                _httpClient.DefaultRequestHeaders.Accept.Clear();
+                _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                if (!string.IsNullOrEmpty(token))
+                {
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                }
+
+                var response = await _httpClient.GetAsync($"{_baseUrl}{endpoint}");
+                response.EnsureSuccessStatusCode();
+
+                return await response.Content.ReadAsStringAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en GetStringAsync: {ex.Message}");
+                throw;
+            }
+        }
     }
 }
