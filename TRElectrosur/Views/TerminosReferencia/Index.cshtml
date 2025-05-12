@@ -40,13 +40,15 @@
             <h6 class="m-0 font-weight-bold" style="color: #2a3c7d;">Listado de Términos de Referencia</h6>
         </div>
         <div class="card-body">
+            <div id="sin-datos" class="d-none">
+                <div class="alert alert-info">No hay términos de referencia disponibles</div>
+            </div>
             <div class="table-responsive">
                 <table class="table table-hover" id="tablaTDR" width="100%" cellspacing="0">
                     <thead class="bg-light">
                         <tr>
                             <th>ID</th>
                             <th>Título</th>
-                            <!-- Columna de Tipo removida -->
                             <th>Creado por</th>
                             <th>Fecha Creación</th>
                             <th>Última Actualización</th>
@@ -62,7 +64,6 @@
                                 <tr>
                                     <td>@tdr.TDRID</td>
                                     <td>@tdr.Title</td>
-                                    <!-- Columna de Tipo removida -->
                                     <td>@tdr.CreatedByUserName</td>
                                     <td>@tdr.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
                                     <td>@(tdr.UpdatedAt.HasValue ? tdr.UpdatedAt.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm") : "-")</td>
@@ -118,18 +119,13 @@
                                 </tr>
                             }
                         }
-                        else
-                        {
-                            <tr>
-                                <td colspan="7" class="text-center">No hay términos de referencia disponibles</td>
-                            </tr>
-                        }
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
+
 <!-- Modal para seleccionar tipo de TDR y crear nuevo TDR -->
 <div class="modal fade" id="seleccionarTipoTDRModal" tabindex="-1" aria-labelledby="seleccionarTipoTDRModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -285,7 +281,6 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-
             console.log("Cantidad de tipos de TDR disponibles: @cantidadTipos");
 
         @if (tiposTDR != null && tiposTDR.Any())
@@ -296,14 +291,20 @@
             }
         }
 
-                    // Verificar si la tabla ya está inicializada como DataTable
-                    if (!$.fn.DataTable.isDataTable('#tablaTDR')) {
-                // Inicialización de DataTables
+                    // Verificar si hay datos en la tabla
+                    var hayDatos = @(Model != null && Model.Any() ? "true" : "false");
+
+            if (hayDatos) {
+                // Inicialización de DataTables solo si hay datos
                 $('#tablaTDR').DataTable({
                     language: dataTablesSpanish,
                     responsive: true,
                     order: [[4, 'desc']] // Ordenar por fecha de creación descendente
                 });
+            } else {
+                // Mostrar mensaje cuando no hay datos
+                $('#sin-datos').removeClass('d-none');
+                $('.table-responsive').addClass('d-none');
             }
 
             // Variables para controlar la selección del tipo de TDR
@@ -442,15 +443,15 @@
 
             // Crear el HTML del toast
             const toastHtml = `
-                                <div id="${toastId}" class="toast align-items-center ${bgClass} text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
-                                    <div class="d-flex">
-                                        <div class="toast-body">
-                                            <strong>${title}</strong>: ${message}
+                                        <div id="${toastId}" class="toast align-items-center ${bgClass} text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                                            <div class="d-flex">
+                                                <div class="toast-body">
+                                                    <strong>${title}</strong>: ${message}
+                                                </div>
+                                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                                            </div>
                                         </div>
-                                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                                    </div>
-                                </div>
-                            `;
+                                    `;
 
             // Añadir el toast al contenedor
             $('#toast-container').append(toastHtml);

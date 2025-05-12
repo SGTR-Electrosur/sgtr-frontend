@@ -72,7 +72,7 @@
     <!-- Cabecera de la página -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 mb-0 text-gray-800">@(canEdit ? "Editar" : "Visualizar") Término de Referencia</h1>
+            <h1 class="h3 mb-0 text-gray-800">@Model.TDR.Title</h1>
             <p class="mb-0 text-muted">
                 <span class="fw-bold">ID:</span> @Model.TDR.TDRID |
                 <span class="fw-bold">Tipo:</span> @Model.TDR.TDRTypeName |
@@ -106,6 +106,18 @@
     </div>
 
     <style>
+
+        /* Destacar las observaciones para usuarios */
+        .observacion-destacada {
+            background-color: #FFF0F0;
+            border-left: 4px solid #dc3545;
+            padding: 10px 15px;
+            border-radius: 0.25rem;
+            margin-top: 8px;
+            font-style: italic;
+            color: #842029;
+        }
+
         .nav-tabs .nav-link {
             border-top-left-radius: 0.5rem;
             border-top-right-radius: 0.5rem;
@@ -147,7 +159,44 @@
         <script src="https://cdn.ckeditor.com/ckeditor5/37.1.0/classic/ckeditor.js"></script>
 
         <script>
+
+
+
+                // Versión alternativa más específica
+                function initCustomSelects() {
+                    // Procesar formaCondicionesPago
+                    var formaPagoSelect = $('#select_formaCondicionesPago');
+                    var formaPagoValue = $('#field_formaCondicionesPago').val().trim().toLowerCase();
+
+                    if (formaPagoValue.includes('única') || formaPagoValue.includes('unica')) {
+                        formaPagoSelect.val('Única');
+                    } else if (formaPagoValue.includes('mensual')) {
+                        formaPagoSelect.val('Mensual');
+                    } else if (formaPagoValue.includes('entregables')) {
+                        formaPagoSelect.val('Por Entregables');
+                    }
+
+                    // Procesar medidasSeguridad
+                    var seguridadSelect = $('#select_medidasSeguridad');
+                    var seguridadValue = $('#field_medidasSeguridad').val().trim().toLowerCase();
+
+                    if (seguridadValue.includes('alto riesgo')) {
+                        seguridadSelect.val('Alto Riesgo');
+                    } else if (seguridadValue.includes('bajo riesgo')) {
+                        seguridadSelect.val('Bajo Riesgo');
+                    } else if (seguridadValue.includes('no corresponde')) {
+                        seguridadSelect.val('No Corresponde');
+                    }
+
+                    console.log('Valor de formaCondicionesPago:', formaPagoValue, '→ Seleccionado:', formaPagoSelect.val());
+                    console.log('Valor de medidasSeguridad:', seguridadValue, '→ Seleccionado:', seguridadSelect.val());
+                }
+
+
             $(document).ready(function () {
+
+                initCustomSelects();
+
                 // Colorear las pestañas al hacer clic
                 $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
                     // Quitar el color azul de todas las pestañas
@@ -452,6 +501,12 @@
                 string fieldContent = fieldElement.GetProperty("HtmlContent").GetString();
                 string fieldComment = fieldElement.GetProperty("comment").GetString();
 
+                // Saltar el campo denominacionContratacion (ID 4)
+                if (fieldName == "denominacionContratacion")
+                {
+                    continue; // Salta a la siguiente iteración del bucle
+                }
+
                 if (infoGeneralFields.Contains(fieldName))
                 {
                     <div class="card shadow-sm mb-3">
@@ -473,14 +528,25 @@
 
                             <!-- Campo de observaciones -->
                             <div class="mt-3">
-                                <label class="form-label">Observaciones</label>
                                 @if (isAdmin && canEdit)
                                 {
+                                    <label class="form-label">Observaciones</label>
                                     <textarea class="form-control" name="observations[@fieldName]" rows="2">@fieldComment</textarea>
                                 }
                                 else
                                 {
-                                    <textarea class="form-control" readonly rows="2">@fieldComment</textarea>
+                                    @if (!string.IsNullOrEmpty(fieldComment))
+                                    {
+                                        <label class="form-label">Observaciones</label>
+                                        <div class="observacion-destacada">
+                                            <i class="fas fa-exclamation-circle me-2"></i>@fieldComment
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <label class="form-label">Sin Observaciones</label>
+                                       <textarea class="form-control" readonly rows="2" style="display:none;">@fieldComment</textarea>
+                                    }
                                 }
                             </div>
                         </div>
@@ -518,14 +584,25 @@
 
                             <!-- Campo de observaciones -->
                             <div class="mt-3">
-                                <label class="form-label">Observaciones</label>
                                 @if (isAdmin && canEdit)
                                 {
+                                    <label class="form-label">Observaciones</label>
                                     <textarea class="form-control" name="observations[@fieldName]" rows="2">@fieldComment</textarea>
                                 }
                                 else
                                 {
-                                    <textarea class="form-control" readonly rows="2">@fieldComment</textarea>
+                                    @if (!string.IsNullOrEmpty(fieldComment))
+                                    {
+                                        <label class="form-label">Observaciones</label>
+                                        <div class="observacion-destacada">
+                                            <i class="fas fa-exclamation-circle me-2"></i>@fieldComment
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <label class="form-label">Sin Observaciones</label>
+                                        <textarea class="form-control" readonly rows="2" style="display:none;">@fieldComment</textarea>
+                                    }
                                 }
                             </div>
                         </div>
@@ -563,14 +640,25 @@
 
                             <!-- Campo de observaciones -->
                             <div class="mt-3">
-                                <label class="form-label">Observaciones</label>
                                 @if (isAdmin && canEdit)
                                 {
+                                    <label class="form-label">Observaciones</label>
                                     <textarea class="form-control" name="observations[@fieldName]" rows="2">@fieldComment</textarea>
                                 }
                                 else
                                 {
-                                    <textarea class="form-control" readonly rows="2">@fieldComment</textarea>
+                                    @if (!string.IsNullOrEmpty(fieldComment))
+                                    {
+                                        <label class="form-label">Observaciones</label>
+                                        <div class="observacion-destacada">
+                                            <i class="fas fa-exclamation-circle me-2"></i>@fieldComment
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <label class="form-label">Sin Observaciones</label>
+                                        <textarea class="form-control" readonly rows="2" style="display:none;">@fieldComment</textarea>
+                                    }
                                 }
                             </div>
                         </div>
@@ -608,14 +696,25 @@
 
                             <!-- Campo de observaciones -->
                             <div class="mt-3">
-                                <label class="form-label">Observaciones</label>
                                 @if (isAdmin && canEdit)
                                 {
+                                    <label class="form-label">Observaciones</label>
                                     <textarea class="form-control" name="observations[@fieldName]" rows="2">@fieldComment</textarea>
                                 }
                                 else
                                 {
-                                    <textarea class="form-control" readonly rows="2">@fieldComment</textarea>
+                                    @if (!string.IsNullOrEmpty(fieldComment))
+                                    {
+                                        <label class="form-label">Observaciones</label>
+                                        <div class="observacion-destacada">
+                                            <i class="fas fa-exclamation-circle me-2"></i>@fieldComment
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <label class="form-label">Sin Observaciones</label>
+                                        <textarea class="form-control" readonly rows="2" style="display:none;">@fieldComment</textarea>
+                                    }
                                 }
                             </div>
                         </div>
@@ -632,7 +731,7 @@
                 string fieldContent = fieldElement.GetProperty("HtmlContent").GetString();
                 string fieldComment = fieldElement.GetProperty("comment").GetString();
 
-                if (condicionesFields.Contains(fieldName))
+                @if (fieldName == "formaCondicionesPago")
                 {
                     <div class="card shadow-sm mb-3">
                         <div class="card-header bg-light">
@@ -640,32 +739,152 @@
                         </div>
                         <div class="card-body">
                             <div class="mb-3">
-                                @if (textareaFields.Contains(fieldName))
+                                @if (canEdit)
                                 {
-                                    <textarea class="form-control" name="fields[@fieldName]" rows="4" @(canEdit ? "" : "readonly")>@fieldContent</textarea>
+                                    <select class="form-select campo-select" id="select_@fieldName" onchange="$('#field_@fieldName').val(this.value)">
+                                        <option value="">Seleccione...</option>
+                                        <option value="Única">Única</option>
+                                        <option value="Mensual">Mensual</option>
+                                        <option value="Por Entregables">Por Entregables</option>
+                                    </select>
+                                    <textarea name="fields[@fieldName]" id="field_@fieldName" class="d-none">@fieldContent</textarea>
                                 }
                                 else
                                 {
-                                    <div id="editor_@fieldName" class="html-editor" @(canEdit ? "" : "data-readonly='true'")>@Html.Raw(fieldContent)</div>
+                                    <input type="text" class="form-control" value="@fieldContent" readonly>
                                     <textarea name="fields[@fieldName]" id="field_@fieldName" class="d-none">@fieldContent</textarea>
                                 }
                             </div>
 
                             <!-- Campo de observaciones -->
                             <div class="mt-3">
-                                <label class="form-label">Observaciones</label>
                                 @if (isAdmin && canEdit)
                                 {
+                                    <label class="form-label">Observaciones</label>
                                     <textarea class="form-control" name="observations[@fieldName]" rows="2">@fieldComment</textarea>
                                 }
                                 else
                                 {
-                                    <textarea class="form-control" readonly rows="2">@fieldComment</textarea>
+                                    @if (!string.IsNullOrEmpty(fieldComment))
+                                    {
+                                        <label class="form-label">Observaciones</label>
+                                        <div class="observacion-destacada">
+                                            <i class="fas fa-exclamation-circle me-2"></i>@fieldComment
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <label class="form-label">Sin Observaciones</label>
+                                        <textarea class="form-control" readonly rows="2" style="display:none;">@fieldComment</textarea>
+                                    }
                                 }
                             </div>
                         </div>
                     </div>
                 }
+                else
+                {
+
+                    @if (fieldName == "medidasSeguridad")
+                    {
+                        <div class="card shadow-sm mb-3">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">@(friendlyNames.ContainsKey(fieldName) ? friendlyNames[fieldName] : fieldName)</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    @if (canEdit)
+                                    {
+                                        <select class="form-select campo-select" id="select_@fieldName" onchange="$('#field_@fieldName').val(this.value)">
+                                            <option value="">Seleccione...</option>
+                                            <option value="Alto Riesgo">Alto Riesgo</option>
+                                            <option value="Bajo Riesgo">Bajo Riesgo</option>
+                                            <option value="No Corresponde">No Corresponde</option>
+                                        </select>
+                                        <textarea name="fields[@fieldName]" id="field_@fieldName" class="d-none">@fieldContent</textarea>
+                                    }
+                                    else
+                                    {
+                                        <input type="text" class="form-control" value="@fieldContent" readonly>
+                                        <textarea name="fields[@fieldName]" id="field_@fieldName" class="d-none">@fieldContent</textarea>
+                                    }
+                                </div>
+
+                                <!-- Campo de observaciones -->
+                                <div class="mt-3">
+                                    @if (isAdmin && canEdit)
+                                    {
+                                        <label class="form-label">Observaciones</label>
+                                        <textarea class="form-control" name="observations[@fieldName]" rows="2">@fieldComment</textarea>
+                                    }
+                                    else
+                                    {
+                                        @if (!string.IsNullOrEmpty(fieldComment))
+                                        {
+                                            <label class="form-label">Observaciones</label>
+                                            <div class="observacion-destacada">
+                                                <i class="fas fa-exclamation-circle me-2"></i>@fieldComment
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <label class="form-label">Sin Observaciones</label>
+                                            <textarea class="form-control" readonly rows="2" style="display:none;">@fieldComment</textarea>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        if (condicionesFields.Contains(fieldName))
+                        {
+                            <div class="card shadow-sm mb-3">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">@(friendlyNames.ContainsKey(fieldName) ? friendlyNames[fieldName] : fieldName)</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        @if (textareaFields.Contains(fieldName))
+                                        {
+                                            <textarea class="form-control" name="fields[@fieldName]" rows="4" @(canEdit ? "" : "readonly")>@fieldContent</textarea>
+                                        }
+                                        else
+                                        {
+                                            <div id="editor_@fieldName" class="html-editor" @(canEdit ? "" : "data-readonly='true'")>@Html.Raw(fieldContent)</div>
+                                            <textarea name="fields[@fieldName]" id="field_@fieldName" class="d-none">@fieldContent</textarea>
+                                        }
+                                    </div>
+
+                                    <!-- Campo de observaciones -->
+                                    <div class="mt-3">
+                                        @if (isAdmin && canEdit)
+                                        {
+                                            <label class="form-label">Observaciones</label>
+                                            <textarea class="form-control" name="observations[@fieldName]" rows="2">@fieldComment</textarea>
+                                        }
+                                        else
+                                        {
+                                            @if (!string.IsNullOrEmpty(fieldComment))
+                                            {
+                                                <label class="form-label">Observaciones</label>
+                                                <div class="observacion-destacada">
+                                                    <i class="fas fa-exclamation-circle me-2"></i>@fieldComment
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <label class="form-label">Sin Observaciones</label>
+                                                <textarea class="form-control" readonly rows="2" style="display:none;">@fieldComment</textarea>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                } 
             }
         </div>
     </div>
@@ -697,7 +916,7 @@
                 @if (isAdmin) // Administrador
                 {
                     <div class="d-flex gap-2">
-                        @if (Model.TDR.CurrentStateID == 2 || Model.TDR.CurrentStateID == 4) // Pendiente de Revisión o Pendiente de Revisión Corregida
+                        @if (Model.TDR.CurrentStateID == 2 || Model.TDR.CurrentStateID == 4 || Model.TDR.CurrentStateID == 1) // Pendiente de Revisión o Pendiente de Revisión Corregida
                         {
                             <button type="button" class="btn btn-warning" id="btnObservarTDR">
                                 <i class="fas fa-exclamation-triangle me-2"></i>Observar TDR
@@ -856,3 +1075,5 @@
         </div>
     </div>
 </div>
+
+
