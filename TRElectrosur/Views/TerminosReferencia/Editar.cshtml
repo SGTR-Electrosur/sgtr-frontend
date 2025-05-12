@@ -218,41 +218,93 @@
 
         <script>
 
+            // Función para inicializar el combobox de Órgano y/o Unidad Orgánica
+            function initOrganoUnidadOrganicaSelect() {
+                var organoSelect = $('#select_organoUnidadOrganica');
+                var organoValue = $('#field_organoUnidadOrganica').val().trim();
 
-
-                // Versión alternativa más específica
-                function initCustomSelects() {
-                    // Procesar formaCondicionesPago
-                    var formaPagoSelect = $('#select_formaCondicionesPago');
-                    var formaPagoValue = $('#field_formaCondicionesPago').val().trim().toLowerCase();
-
-                    if (formaPagoValue.includes('única') || formaPagoValue.includes('unica')) {
-                        formaPagoSelect.val('Única');
-                    } else if (formaPagoValue.includes('mensual')) {
-                        formaPagoSelect.val('Mensual');
-                    } else if (formaPagoValue.includes('entregables')) {
-                        formaPagoSelect.val('Por Entregables');
-                    }
-
-                    // Procesar medidasSeguridad
-                    var seguridadSelect = $('#select_medidasSeguridad');
-                    var seguridadValue = $('#field_medidasSeguridad').val().trim().toLowerCase();
-
-                    if (seguridadValue.includes('alto riesgo')) {
-                        seguridadSelect.val('Alto Riesgo');
-                    } else if (seguridadValue.includes('bajo riesgo')) {
-                        seguridadSelect.val('Bajo Riesgo');
-                    } else if (seguridadValue.includes('no corresponde')) {
-                        seguridadSelect.val('No Corresponde');
-                    }
-
-                    console.log('Valor de formaCondicionesPago:', formaPagoValue, '→ Seleccionado:', formaPagoSelect.val());
-                    console.log('Valor de medidasSeguridad:', seguridadValue, '→ Seleccionado:', seguridadSelect.val());
+                // Si el combobox no está definido, significa que estamos en modo de solo lectura
+                if (organoSelect.length === 0) {
+                    // Asegurarse de que el valor se muestra correctamente en modo de solo lectura
+                    $('#readonly_organoUnidadOrganica').text(organoValue);
+                    return;
                 }
 
+                // Verificar si hay un valor existente para seleccionarlo en el combobox
+                if (organoValue) {
+                    // Buscar la opción que coincide con el valor existente
+                    var matchFound = false;
+                    $('#select_organoUnidadOrganica option').each(function () {
+                        if ($(this).val() === organoValue) {
+                            matchFound = true;
+                            organoSelect.val(organoValue);
+                        }
+                    });
+
+                    // Si no se encuentra coincidencia exacta, mantener "Seleccione..."
+                    if (!matchFound) {
+                        organoSelect.val("");
+                    }
+                } else {
+                    // Si no hay valor, seleccionar la opción predeterminada "Seleccione..."
+                    organoSelect.val("");
+                }
+            }
+
+            // Función mejorada para inicializar los selectores personalizados
+            function initCustomSelects() {
+                // Procesar formaCondicionesPago
+                var formaPagoSelect = $('#select_formaCondicionesPago');
+                var formaPagoValue = $('#field_formaCondicionesPago').val().trim();
+
+                // Comprobar si estamos en modo de solo lectura
+                if (formaPagoSelect.length === 0) {
+                    // Mostrar el valor en modo solo lectura
+                    $('#readonly_formaCondicionesPago').text(formaPagoValue);
+                } else {
+                    // Modo editable - establecer el valor en el combobox
+                    if (formaPagoValue.toLowerCase().includes('única') || formaPagoValue.toLowerCase().includes('unica')) {
+                        formaPagoSelect.val('Única');
+                    } else if (formaPagoValue.toLowerCase().includes('mensual')) {
+                        formaPagoSelect.val('Mensual');
+                    } else if (formaPagoValue.toLowerCase().includes('entregables')) {
+                        formaPagoSelect.val('Por Entregables');
+                    } else {
+                        // Si no coincide con ninguno, mantener "Seleccione..."
+                        formaPagoSelect.val("");
+                    }
+                }
+
+                // Procesar medidasSeguridad
+                var seguridadSelect = $('#select_medidasSeguridad');
+                var seguridadValue = $('#field_medidasSeguridad').val().trim();
+
+                // Comprobar si estamos en modo de solo lectura
+                if (seguridadSelect.length === 0) {
+                    // Mostrar el valor en modo solo lectura
+                    $('#readonly_medidasSeguridad').text(seguridadValue);
+                } else {
+                    // Modo editable - establecer el valor en el combobox
+                    if (seguridadValue.toLowerCase().includes('alto riesgo')) {
+                        seguridadSelect.val('Alto Riesgo');
+                    } else if (seguridadValue.toLowerCase().includes('bajo riesgo')) {
+                        seguridadSelect.val('Bajo Riesgo');
+                    } else if (seguridadValue.toLowerCase().includes('no corresponde')) {
+                        seguridadSelect.val('No Corresponde');
+                    } else {
+                        // Si no coincide con ninguno, mantener "Seleccione..."
+                        seguridadSelect.val("");
+                    }
+                }
+
+                console.log('Valor de formaCondicionesPago:', formaPagoValue, '→ Seleccionado:', formaPagoSelect.length ? formaPagoSelect.val() : 'Modo solo lectura');
+                console.log('Valor de medidasSeguridad:', seguridadValue, '→ Seleccionado:', seguridadSelect.length ? seguridadSelect.val() : 'Modo solo lectura');
+            }
 
             $(document).ready(function () {
 
+                // Inicialización del combobox para organoUnidadOrganica
+                initOrganoUnidadOrganicaSelect();
                 initCustomSelects();
 
                 // Colorear las pestañas al hacer clic
@@ -551,6 +603,9 @@
 
     <!-- Contenido de las pestañas -->
     <div class="tab-content" id="tdrTabsContent">
+
+@*         Pestaña DATOS GENERALES *@
+
         <div class="tab-pane fade show active" id="pane-info" role="tabpanel" aria-labelledby="tab-info">
             @foreach (var fieldElement in fields.EnumerateArray())
             {
@@ -580,7 +635,51 @@
                             }
 
                             <div class="mb-3">
-                                @if (textareaFields.Contains(fieldName))
+                                @if (fieldName == "organoUnidadOrganica")
+                                {
+                                    @if (canEdit)
+                                    {
+                                        <select class="form-select campo-select" id="select_@fieldName" onchange="$('#field_@fieldName').val(this.value)">
+                                            <option value="">Seleccione...</option>
+                                            <option value="OFICINA DE INTEGRIDAD Y CUMPLIMIENTO DE LA GERENCIA GENERAL">OFICINA DE INTEGRIDAD Y CUMPLIMIENTO DE LA GERENCIA GENERAL</option>
+                                            <option value="DEPARTAMENTO DE CONTROL DE GESTIÓN DE LA GERENCIA DE PLANEAMIENTO Y CONTROL DE GESTIÓN">DEPARTAMENTO DE CONTROL DE GESTIÓN DE LA GERENCIA DE PLANEAMIENTO Y CONTROL DE GESTIÓN</option>
+                                            <option value="DEPARTAMENTO DE EXCELENCIA OPERACIONAL DE LA GERENCIA DE PLANEAMIENTO Y CONTROL DE GESTIÓN">DEPARTAMENTO DE EXCELENCIA OPERACIONAL DE LA GERENCIA DE PLANEAMIENTO Y CONTROL DE GESTIÓN</option>
+                                            <option value="DEPARTAMENTO DE SEGURIDAD Y MEDIO AMBIENTE DE LA GERENCIA DE PLANEAMIENTO Y CONTROL DE GESTIÓN">DEPARTAMENTO DE SEGURIDAD Y MEDIO AMBIENTE DE LA GERENCIA DE PLANEAMIENTO Y CONTROL DE GESTIÓN</option>
+                                            <option value="DEPARTAMENTO DE FISCALIZACIÓN Y CALIDAD DE LA GERENCIA DE PLANEAMIENTO Y CONTROL DE GESTIÓN">DEPARTAMENTO DE FISCALIZACIÓN Y CALIDAD DE LA GERENCIA DE PLANEAMIENTO Y CONTROL DE GESTIÓN</option>
+                                            <option value="SUB GERENCIA LEGAL DE LA GERENCIA GENERAL">SUB GERENCIA LEGAL DE LA GERENCIA GENERAL</option>
+                                            <option value="OFICINA DE IMAGEN Y RESPONSABILIDAD SOCIAL DE LA GERENCIA GENERAL">OFICINA DE IMAGEN Y RESPONSABILIDAD SOCIAL DE LA GERENCIA GENERAL</option>
+                                            <option value="DEPARTAMENTO DE GESTIÓN HUMANA DE LA GERENCIA DE ADMINISTRACIÓN Y FINANZAS">DEPARTAMENTO DE GESTIÓN HUMANA DE LA GERENCIA DE ADMINISTRACIÓN Y FINANZAS</option>
+                                            <option value="DEPARTAMENTO DE ACTIVO FIJO DE LA GERENCIA DE ADMINISTRACIÓN Y FINANZAS">DEPARTAMENTO DE ACTIVO FIJO DE LA GERENCIA DE ADMINISTRACIÓN Y FINANZAS</option>
+                                            <option value="DEPARTAMENTO DE CONTABILIDAD DE LA GERENCIA DE ADMINISTRACIÓN Y FINANZAS">DEPARTAMENTO DE CONTABILIDAD DE LA GERENCIA DE ADMINISTRACIÓN Y FINANZAS</option>
+                                            <option value="DEPARTAMENTO DE LOGISTICA DE LA GERENCIA DE ADMINISTRACIÓN Y FINANZAS">DEPARTAMENTO DE LOGISTICA DE LA GERENCIA DE ADMINISTRACIÓN Y FINANZAS</option>
+                                            <option value="DEPARTAMENTO DE INVESTIGACIÓN DE PROYECTOS DE LA GERENCIA DE PROYECTOS">DEPARTAMENTO DE INVESTIGACIÓN DE PROYECTOS DE LA GERENCIA DE PROYECTOS</option>
+                                            <option value="DEPARTAMENTO DE DESARROLLO DE PROYECTOS DE LA GERENCIA DE PROYECTOS">DEPARTAMENTO DE DESARROLLO DE PROYECTOS DE LA GERENCIA DE PROYECTOS</option>
+                                            <option value="DEPARTAMENTO DE PLANEAMIENTO ELÉCTRICO DE LA GERENCIA DE PROYECTOS">DEPARTAMENTO DE PLANEAMIENTO ELÉCTRICO DE LA GERENCIA DE PROYECTOS</option>
+                                            <option value="SUB GERENCIA DE TECNOLOGÍAS DE INFORMACIÓN Y COMUNICACIONES DE LA GERENCIA GENERAL">SUB GERENCIA DE TECNOLOGÍAS DE INFORMACIÓN Y COMUNICACIONES DE LA GERENCIA GENERAL</option>
+                                            <option value="DEPARTAMENTO DE CLIENTES LIBRES Y MAYORES DE LA GERENCIA COMERCIAL">DEPARTAMENTO DE CLIENTES LIBRES Y MAYORES DE LA GERENCIA COMERCIAL</option>
+                                            <option value="DEPARTAMENTO DE ATENCIÓN AL CLIENTE DE LA GERENCIA COMERCIAL">DEPARTAMENTO DE ATENCIÓN AL CLIENTE DE LA GERENCIA COMERCIAL</option>
+                                            <option value="DEPARTAMENTO DE PROGRAMACIÓN DE CONEXIONES DE LA GERENCIA COMERCIAL">DEPARTAMENTO DE PROGRAMACIÓN DE CONEXIONES DE LA GERENCIA COMERCIAL</option>
+                                            <option value="DEPARTAMENTO DE OPERACIONES COMERCIALES DE LA GERENCIA COMERCIAL">DEPARTAMENTO DE OPERACIONES COMERCIALES DE LA GERENCIA COMERCIAL</option>
+                                            <option value="DEPARTAMENTO DE OPERACIONES Y TRANSMISIÓN DE LA GERENCIA TÉCNICA">DEPARTAMENTO DE OPERACIONES Y TRANSMISIÓN DE LA GERENCIA TÉCNICA</option>
+                                            <option value="DEPARTAMENTO DE MANTENIMIENTO DE LA GERENCIA TÉCNICA">DEPARTAMENTO DE MANTENIMIENTO DE LA GERENCIA TÉCNICA</option>
+                                            <option value="DEPARTAMENTO COMERCIAL ZONAL TACNA DE LA GERENCIA ZONAL TACNA">DEPARTAMENTO COMERCIAL ZONAL TACNA DE LA GERENCIA ZONAL TACNA</option>
+                                            <option value="DEPARTAMENTO DE OPERACIONES ZONAL TACNA DE LA GERENCIA ZONAL TACNA">DEPARTAMENTO DE OPERACIONES ZONAL TACNA DE LA GERENCIA ZONAL TACNA</option>
+                                            <option value="DEPARTAMENTO DE ADMINISTRACIÓN ZONAL MOQUEGUA DE LA GERENCIA ZONAL MOQUEGUA">DEPARTAMENTO DE ADMINISTRACIÓN ZONAL MOQUEGUA DE LA GERENCIA ZONAL MOQUEGUA</option>
+                                            <option value="DEPARTAMENTO COMERCIAL ZONAL MOQUEGUA DE LA GERENCIA ZONAL MOQUEGUA">DEPARTAMENTO COMERCIAL ZONAL MOQUEGUA DE LA GERENCIA ZONAL MOQUEGUA</option>
+                                            <option value="DEPARTAMENTO DE OPERACIONES ZONAL MOQUEGUA DE LA GERENCIA ZONAL MOQUEGUA">DEPARTAMENTO DE OPERACIONES ZONAL MOQUEGUA DE LA GERENCIA ZONAL MOQUEGUA</option>
+                                            <option value="DEPARTAMENTO DE ADMINISTRACIÓN ZONAL ILO DE LA GERENCIA ZONAL ILO">DEPARTAMENTO DE ADMINISTRACIÓN ZONAL ILO DE LA GERENCIA ZONAL ILO</option>
+                                            <option value="DEPARTAMENTO DE COMERCIAL ZONAL ILO DE LA GERENCIA ZONAL ILO">DEPARTAMENTO DE COMERCIAL ZONAL ILO DE LA GERENCIA ZONAL ILO</option>
+                                            <option value="DEPARTAMENTO DE OPERACIONES ZONAL ILO DE LA GERENCIA ZONAL ILO">DEPARTAMENTO DE OPERACIONES ZONAL ILO DE LA GERENCIA ZONAL ILO</option>
+                                        </select>
+                                        <textarea name="fields[@fieldName]" id="field_@fieldName" class="d-none">@fieldContent</textarea>
+                                    }
+                                    else
+                                    {
+                                        <input type="text" class="form-control" value="@fieldContent" readonly>
+                                        <textarea name="fields[@fieldName]" id="field_@fieldName" class="d-none">@fieldContent</textarea>
+                                    }
+                                }
+                                else if (textareaFields.Contains(fieldName))
                                 {
                                     <textarea class="form-control" name="fields[@fieldName]" rows="4" @(canEdit ? "" : "readonly")>@fieldContent</textarea>
                                 }
@@ -1000,6 +1099,7 @@
                 }
             }
         </div>
+
     </div>
 
     <!-- Botones de acción -->
