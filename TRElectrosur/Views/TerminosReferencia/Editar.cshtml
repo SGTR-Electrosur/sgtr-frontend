@@ -36,7 +36,7 @@
     {
         { "organoUnidadOrganica", "Órgano y/o Unidad Orgánica" },
         { "actividadPoiAccionEstrategica", "Actividad POI / Acción Estratégica" },
-        { "denominacionContratacion", "Denominación de la Contratación" },
+        { "denominacionContratacion", "Riesgos" },
         { "finalidadPublica", "Finalidad Pública" },
         { "objetivoContratacion", "Objetivo de la Contratación" },
         { "alcancesServicio", "Alcances del Servicio" },
@@ -65,7 +65,7 @@
     };
 
     // Lista de campos que deben usar textarea en lugar de editor HTML
-    var textareaFields = new List<string> { "organoUnidadOrganica", "actividadPoiAccionEstrategica", "denominacionContratacion", "finalidadPublica" };
+    var textareaFields = new List<string> { "organoUnidadOrganica", "actividadPoiAccionEstrategica", "finalidadPublica" };
 }
 
 <style>
@@ -94,7 +94,7 @@
         // Sección: Información General
         { "organoUnidadOrganica", "INDICAR EL ÓRGANO Y/O UNIDAD ORGÁNICA, RESPONSABLE DEL REQUERIMIENTO" },
         { "actividadPoiAccionEstrategica", "INDICAR EL CÓDIGO Y LA DENOMINACIÓN DEL PLAN POI" },
-        { "denominacionContratacion", "INDICAR LA DENOMINACIÓN DEL REQUERIMIENTO DE CONTRATACIÓN" },
+        { "denominacionContratacion", "INDICAR LOS RIESGOS RELACIONADOS AL TDR" },
         { "finalidadPublica", "INDICAR QUE SE BUSCA SATISFACER, MEJORAR Y/O ATENDER CON LA CONTRATACIÓN REQUERIDA" },
         { "objetivoContratacion", "INDICAR CUÁL ES EL OBJETIVO DE LA CONTRATACIÓN QUE PERMITA CONOCER AL PROVEEDOR CLARAMENTE QUE BENEFICIOS PRETENDE OBTENER MEDIANTE EL PRESENTE SERVICIO" },
 
@@ -613,11 +613,11 @@
                 string fieldContent = fieldElement.GetProperty("HtmlContent").GetString();
                 string fieldComment = fieldElement.GetProperty("comment").GetString();
 
-                // Saltar el campo denominacionContratacion (ID 4)
+@*                 // Saltar el campo denominacionContratacion (ID 4)
                 if (fieldName == "denominacionContratacion")
                 {
                     continue; // Salta a la siguiente iteración del bucle
-                }
+                } *@
 
                 if (infoGeneralFields.Contains(fieldName))
                 {
