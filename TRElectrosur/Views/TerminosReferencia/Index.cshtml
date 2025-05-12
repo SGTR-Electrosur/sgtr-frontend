@@ -128,7 +128,7 @@
 
 <!-- Modal para seleccionar tipo de TDR y crear nuevo TDR -->
 <div class="modal fade" id="seleccionarTipoTDRModal" tabindex="-1" aria-labelledby="seleccionarTipoTDRModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header text-white" style="background-color: #2a3c7d;">
                 <h5 class="modal-title" id="seleccionarTipoTDRModalLabel">Crear Nuevo Término de Referencia</h5>
@@ -148,12 +148,12 @@
                         <label class="form-label">Seleccione el tipo de TDR <span class="text-danger">*</span></label>
                     </div>
 
-                    <div class="row g-4" id="tipoTDRSelector">
+                    <div class="row g-3" id="tipoTDRSelector">
                         @if (ViewBag.TDRTypes != null)
                         {
                             foreach (var type in ViewBag.TDRTypes)
                             {
-                                <div class="col-md-6">
+                                <div class="col-md-4 col-lg-3 col-xl-2-4">
                                     <div class="card h-100 shadow-sm tipo-tdr-card" data-tdr-type-id="@type.TDRTypeID">
                                         <div class="card-body text-center p-4">
                                             <div class="display-1 mb-3" style="color: #2a3c7d;">
@@ -173,6 +173,9 @@
                                                             break;
                                                         case 4: // Servicios de Consultoría
                                                             iconClass = "fas fa-file-alt";
+                                                            break;
+                                                        case 5: // Servicios de Consultoría
+                                                            iconClass = "fas fa-drafting-compass"; // o el icono que prefieras
                                                             break;
                                                     }
                                                 }
@@ -465,3 +468,41 @@
         }
     </script>
 }
+
+                                            <style>
+    /* Estilos existentes ... */
+    
+    /* Clase personalizada para 5 columnas */
+    .col-xl-2-4 {
+        position: relative;
+        width: 100%;
+        padding-right: 0.75rem;
+        padding-left: 0.75rem;
+    }
+    
+    @@media (min-width: 1200px) {
+        .col-xl-2-4 {
+            flex: 0 0 20%;
+            max-width: 20%;
+        }
+    }
+    
+    /* Ajustar el tamaño de las cards para que sean más compactas */
+    .tipo-tdr-card .card-body {
+        padding: 1.5rem 1rem;
+    }
+    
+    .tipo-tdr-card .display-1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .tipo-tdr-card .card-title {
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .tipo-tdr-card .card-text {
+        font-size: 0.85rem;
+    }
+</style>
