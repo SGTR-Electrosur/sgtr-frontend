@@ -28,7 +28,7 @@
     var infoGeneralFields = new List<string> { "organoUnidadOrganica", "planPoi", "finalidadPublica", "objetivoContratacion" };
     var alcancesFields = new List<string> { "alcancesServicio", "gestionRiesgos", "reglamentos", "seguros", "prestacionesAccesorias" };
     var requisitosFields = new List<string> { "requisitosProveedor", "experienciaProveedor", "perfilPersonal", "formacionAcademica", "experienciaPersonalClave", "capacitacion", "otros" };
-    var plazosFields = new List<string> { "lugar", "plazo", "entregables", "plazoLugar", "conformidad" };
+    var plazosFields = new List<string> { "lugar", "plazo", "entregables", "lugarPresentacionEntregables", "plazoLugar", "conformidad" };
     var condicionesFields = new List<string> { "sistemaContratacion", "formaCondicionesPago", "responsabilidadProveedor", "consideracionesGeneralesProductos", "otrasPenalidades", "medidasSeguridad", "clausula", "anexos" };
 
     // Diccionario para convertir nombres de campo técnicos a nombres amigables
@@ -53,6 +53,7 @@
         { "lugar", "Lugar de Ejecución" },
         { "plazo", "Plazo de Ejecución" },
         { "entregables", "Entregables" },
+        { "lugarPresentacionEntregables", "Lugar de Presentación de Entregables" },
         { "plazoLugar", "Plazo y Lugar de Presentación" },
         { "conformidad", "Conformidad" },
         { "sistemaContratacion", "Sistema de Contratación" },
@@ -114,6 +115,7 @@
         { "lugar", "SEÑALAR EL LUGAR DONDE SE EFECTUARÁ LA PRESTACIÓN DEL SERVICIO, DONDE DEBE ESPECIFICAR DISTRITO, PROVINCIA Y REGIÓN" },
         { "plazo", "DEFINIR EL PLAZO MÁXIMO EN DÍAS CALENDARIO, INDICAR EL INICIO DE LA EJECUCIÓN DEL SERVICIO O A PARTIR DEL DÍA SIGUIENTE DE NOTIFICADO EL PEDIDO DE COMPRA, EN CASO SE ESTABLEZCA CONDICIONES PREVIAS A LA EJECUCIÓN DEL SERVICIO, SE DEBE PRECISAR DICHO PLAZO" },
         { "entregables", "DEFINIR LA FORMA DE PRESENTACIÓN DEL INFORME (ÚNICO, MENSUAL O POR ENTREGABLES). DE SER POR ENTREGABLE: DETALLAR EL NÚMERO DE ENTREGABLES, EL PORCENTAJE DE CADA ENTREGABLE EN RELACIÓN AL TOTAL DEL SERVICIO, EL PLAZO DE CADA ENTREGABLE (CON RELACIÓN AL NUMERAL 12.2.). Y EL CONTENIDO DE CADA ENTREGABLE (CON RELACIÓN AL NUMERAL 7. ALCANCES DEL SERVICIO)" },
+        { "lugarPresentacionEntregables", "DEFINIR EL LUGAR DE PRESENTACIÓN DE LOS ENTREGABLES" },
         { "plazoLugar", "Una vez culminado el plazo de ejecución establecido por entregable, el contratista tendrá un plazo máximo de dos (02) días hábiles siguientes para su presentación. El (Los) entregable(s) debe(n) ser presentado(s), a través de: MESA DE PARTES PRESENCIAL O VIRTUAL O CORREO ELECTRÓNICO DE ELECTROSUR S.A." },
         { "conformidad", "CONSIGNAR EL CARGO Y ÓRGANO Y/O UNIDAD ORGÁNICA RESPONSABLE DE OTORGAR LA CONFORMIDAD DEL SERVICIO Y REQUISITOS QUE DEBE CUMPLIR EL PROVEEDOR PARA EL OTORGAMIENTO DE LA CONFORMIDAD" },
 
