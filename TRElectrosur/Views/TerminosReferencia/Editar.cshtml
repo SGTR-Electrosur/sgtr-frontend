@@ -25,18 +25,18 @@
     }
 
     // Listas de categorías de campos para organizar la visualización
-    var infoGeneralFields = new List<string> { "organoUnidadOrganica", "actividadPoiAccionEstrategica", "denominacionContratacion", "finalidadPublica", "objetivoContratacion" };
-    var alcancesFields = new List<string> { "alcancesServicio", "reglamentos", "seguros", "prestacionesAccesorias" };
+    var infoGeneralFields = new List<string> { "organoUnidadOrganica", "planPoi", "finalidadPublica", "objetivoContratacion" };
+    var alcancesFields = new List<string> { "alcancesServicio", "gestionRiesgos", "reglamentos", "seguros", "prestacionesAccesorias" };
     var requisitosFields = new List<string> { "requisitosProveedor", "experienciaProveedor", "perfilPersonal", "formacionAcademica", "experienciaPersonalClave", "capacitacion", "otros" };
     var plazosFields = new List<string> { "lugar", "plazo", "entregables", "plazoLugar", "conformidad" };
-    var condicionesFields = new List<string> { "sistemaContratacion", "formaCondicionesPago", "responsabilidad", "otrasPenalidades", "medidasSeguridad", "clausula", "anexos" };
+    var condicionesFields = new List<string> { "sistemaContratacion", "formaCondicionesPago", "responsabilidadProveedor", "consideracionesGeneralesProductos", "otrasPenalidades", "medidasSeguridad", "clausula", "anexos" };
 
     // Diccionario para convertir nombres de campo técnicos a nombres amigables
     var friendlyNames = new Dictionary<string, string>
     {
         { "organoUnidadOrganica", "Órgano y/o Unidad Orgánica" },
-        { "actividadPoiAccionEstrategica", "Actividad POI / Acción Estratégica" },
-        { "denominacionContratacion", "Riesgos" },
+        { "planPoi", "Plan POI" },
+        { "gestionRiesgos", "Gestión de Riesgos" },
         { "finalidadPublica", "Finalidad Pública" },
         { "objetivoContratacion", "Objetivo de la Contratación" },
         { "alcancesServicio", "Alcances del Servicio" },
@@ -57,7 +57,8 @@
         { "conformidad", "Conformidad" },
         { "sistemaContratacion", "Sistema de Contratación" },
         { "formaCondicionesPago", "Forma y Condiciones de Pago" },
-        { "responsabilidad", "Responsabilidad del Proveedor" },
+        { "responsabilidadProveedor", "Responsabilidad del Proveedor" },
+        { "consideracionesGeneralesProductos","Consideraciones Generales Productos"},
         { "otrasPenalidades", "Otras Penalidades" },
         { "medidasSeguridad", "Medidas de Seguridad" },
         { "clausula", "Cláusulas" },
@@ -93,8 +94,8 @@
     {
         // Sección: Información General
         { "organoUnidadOrganica", "INDICAR EL ÓRGANO Y/O UNIDAD ORGÁNICA, RESPONSABLE DEL REQUERIMIENTO" },
-        { "actividadPoiAccionEstrategica", "INDICAR EL CÓDIGO Y LA DENOMINACIÓN DEL PLAN POI" },
-        { "denominacionContratacion", "INDICAR LOS RIESGOS RELACIONADOS AL TDR" },
+        { "planPoi", "INDICAR EL CÓDIGO Y LA DENOMINACIÓN DEL PLAN POI" },
+        { "gestionRiesgos", "INDICAR LOS RIESGOS RELACIONADOS AL TDR" },
         { "finalidadPublica", "INDICAR QUE SE BUSCA SATISFACER, MEJORAR Y/O ATENDER CON LA CONTRATACIÓN REQUERIDA" },
         { "objetivoContratacion", "INDICAR CUÁL ES EL OBJETIVO DE LA CONTRATACIÓN QUE PERMITA CONOCER AL PROVEEDOR CLARAMENTE QUE BENEFICIOS PRETENDE OBTENER MEDIANTE EL PRESENTE SERVICIO" },
 
@@ -119,9 +120,9 @@
         // Sección: Condiciones
         { "sistemaContratacion", "PRECISAR EL SISTEMA DE A SUMA ALZADA O A PRECIOS UNITARIOS" },
         { "formaCondicionesPago", "EXPRESAR LA FORMA DE PAGO: UNICA, MENSUAL O POR ENTREGABLES (DE CONSIGNAR LA OPCIÓN DE ENTREGABLES DEBERÁ DE GUARDAR RELACIÓN CON EL NUMERAL 13. ENTREGABLES HACIENDO MENCIÓN EL PORCENTAJE DE PAGO)" },
-        { "responsabilidad", "CONSIGNAR TIEMPO EN AÑOS, NO MENOR DE UN (1) AÑO, CONSIDERANDO LO DISPUESTO EN EL GAL-2078-2023 DEL EXPEDIENTE 20230300012247" },
-        { "otrasPenalidades", "DE ACUERDO AL TIPO DE CONTRATACIÓN LAS ÁREAS USUARIAS PUEDEN ESTABLECER OTRAS PENALIDADES DIFERENTES AL RETRASO, LAS CUALES DEBEN SER OBJETIVAS, RAZONABLES Y PROPORCIONALES CON EL OBJETO DE LA CONTRATACIÓN, POR LO QUE SE DEBE PRECISAR EL LISTADO DE LAS SITUACIONES, CONDICIONES, EL PROCEDIMIENTO DE VERIFICACIÓN DE LAS OCURRENCIAS Y LOS MONTOS O PORCENTAJES A APLICAR" },
-        { "medidasSeguridad", "INDICAR SI CORRESPONDE ALTO RIESGO O BAJO RIESGO O NO CORRESPONDE CONSIDERANDO LA CALIFICACIÓN OTORGADA POR EL DEPARTAMENTO DE SEGURIDAD Y MEDIOAMBIENTE" }
+        { "responsabilidadProveedor", "CONSIGNAR TIEMPO EN AÑOS, NO MENOR DE UN (1) AÑO, CONSIDERANDO LO DISPUESTO EN EL GAL-2078-2023 DEL EXPEDIENTE 20230300012247" },
+        { "consideracionesGeneralesProductos","INDICAR LAS CONSIDERACIONES GENERALES DE LOS PRODUCTOS"  },
+        { "otrasPenalidades", "DE ACUERDO AL TIPO DE CONTRATACIÓN LAS ÁREAS USUARIAS PUEDEN ESTABLECER OTRAS PENALIDADES DIFERENTES AL RETRASO, LAS CUALES DEBEN SER OBJETIVAS, RAZONABLES Y PROPORCIONALES CON EL OBJETO DE LA CONTRATACIÓN, POR LO QUE SE DEBE PRECISAR EL LISTADO DE LAS SITUACIONES, CONDICIONES, EL PROCEDIMIENTO DE VERIFICACIÓN DE LAS OCURRENCIAS Y LOS MONTOS O PORCENTAJES A APLICAR" }
     };
 }
 
