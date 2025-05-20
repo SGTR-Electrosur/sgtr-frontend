@@ -14,7 +14,7 @@ namespace TRElectrosur.Models
         public int? UpdatedByUserID { get; set; }
         
         // Propiedades de navegación
-        public string TDRTypeName { get; set; }
+        public string TypeName { get; set; }
         public string CurrentStateName { get; set; }
         public string CreatedByUserName { get; set; }
         public string UpdatedByUserName { get; set; }

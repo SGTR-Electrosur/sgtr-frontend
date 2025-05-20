@@ -103,7 +103,7 @@ namespace TRElectrosur.Controllers
                 if (tdrTypes != null)
                 {
                     var tipoActual = tdrTypes.FirstOrDefault(t => t.TDRTypeID == tdr.TDRTypeID);
-                    tdr.TDRTypeName = tipoActual?.TypeName ?? "Desconocido";
+                    tdr.TypeName = tipoActual?.TypeName ?? "Desconocido";
                 }
 
                 // Obtener todas las versiones de este TDR
@@ -124,7 +124,15 @@ namespace TRElectrosur.Controllers
                     RawFieldsData = fieldsResponseStr // Guardar los datos crudos como string
                 };
 
-                return View(viewModel);
+                // Determinar qué vista mostrar según el tipo de TDR
+                if (tdr.TDRTypeID == 3) // Tipo 3 corresponde a ETT
+                {
+                    return View("EditarETT", viewModel);
+                }
+                else
+                {
+                    return View(viewModel); // Vista Editar por defecto
+                }
             }
             catch (Exception ex)
             {
@@ -359,244 +367,6 @@ namespace TRElectrosur.Controllers
             public int versionId { get; set; }
             public int fieldId { get; set; }
             public string htmlContent { get; set; }
-        }
-
-
-        // INDICACIONES PARA CADA CAMPO
-
-        public class InstruccionCampoTDR
-        {
-            public string FieldName { get; set; }        // Nombre del campo
-            public string Title { get; set; }            // Título de la instrucción
-            public string Description { get; set; }      // Descripción detallada
-            public string Example { get; set; }          // Ejemplo de llenado (opcional)
-            public string Icon { get; set; }             // Icono de Font Awesome
-            public bool IsRequired { get; set; }         // Si el campo es obligatorio
-        }
-
-        public static class InstruccionesTDRHelper
-        {
-            public static List<InstruccionCampoTDR> ObtenerInstrucciones()
-            {
-                // Crear la lista de instrucciones para cada campo
-                return new List<InstruccionCampoTDR>
-        {
-            // SECCIÓN: INFORMACIÓN GENERAL
-            new InstruccionCampoTDR {
-                FieldName = "seccion_info_general",
-                Title = "Información General",
-                Description = "Esta sección contiene los datos básicos del requerimiento. Complete los campos con información clara y precisa para identificar el servicio solicitado.",
-                Icon = "fas fa-info-circle",
-                IsRequired = false
-            },
-            new InstruccionCampoTDR {
-                FieldName = "organoUnidadOrganica",
-                Title = "Órgano y/o Unidad Orgánica",
-                Description = "Indique el nombre del órgano y/o unidad orgánica responsable del requerimiento.",
-                Example = "Gerencia de Administración y Finanzas - Departamento de Logística",
-                Icon = "fas fa-sitemap",
-                IsRequired = true
-            },
-            new InstruccionCampoTDR {
-                FieldName = "actividadPoiAccionEstrategica",
-                Title = "Actividad POI / Acción Estratégica",
-                Description = "Indicar el código y la denominación de la actividad del Plan Operativo Institucional o acción estratégica del PEI.",
-                Example = "AO03-0001: Gestión de Recursos Humanos",
-                Icon = "fas fa-clipboard-list",
-                IsRequired = true
-            },
-            new InstruccionCampoTDR {
-                FieldName = "denominacionContratacion",
-                Title = "Denominación de la Contratación",
-                Description = "Especifique el nombre completo del servicio a contratar de manera clara y precisa.",
-                Example = "Servicio de mantenimiento preventivo y correctivo del sistema eléctrico de la sede central",
-                Icon = "fas fa-file-signature",
-                IsRequired = true
-            },
-            new InstruccionCampoTDR {
-                FieldName = "finalidadPublica",
-                Title = "Finalidad Pública",
-                Description = "Describa qué se busca satisfacer, mejorar y/o atender con la contratación requerida en términos de beneficio público o institucional.",
-                Example = "Garantizar la continuidad del servicio eléctrico para el desarrollo óptimo de las actividades administrativas y operativas de la institución",
-                Icon = "fas fa-bullseye",
-                IsRequired = true
-            },
-            new InstruccionCampoTDR {
-                FieldName = "objetivoContratacion",
-                Title = "Objetivo de la Contratación",
-                Description = "Especifique el objetivo principal que se pretende lograr con el servicio solicitado, detallando los beneficios esperados para la entidad.",
-                Example = "Contar con un sistema eléctrico operativo y en óptimas condiciones, previniendo fallas y asegurando su funcionamiento continuo",
-                Icon = "fas fa-crosshairs",
-                IsRequired = true
-            },
-
-            // SECCIÓN: ALCANCES
-            new InstruccionCampoTDR {
-                FieldName = "seccion_alcances",
-                Title = "Alcances del Servicio",
-                Description = "Detalle las actividades, procedimientos, especificaciones técnicas y recursos necesarios para la correcta ejecución del servicio.",
-                Icon = "fas fa-tasks",
-                IsRequired = false
-            },
-            new InstruccionCampoTDR {
-                FieldName = "alcancesServicio",
-                Title = "Alcances del Servicio",
-                Description = "Describa detalladamente todas las actividades a desarrollar, procedimientos a seguir, plan de trabajo y recursos a ser provistos por el proveedor y por la entidad. Incluya: especificaciones técnicas, plan de trabajo, entregables esperados y recursos necesarios.",
-                Icon = "fas fa-list-ul",
-                IsRequired = true
-            },
-            new InstruccionCampoTDR {
-                FieldName = "reglamentos",
-                Title = "Reglamentos Técnicos y Normas",
-                Description = "Señale reglamentos técnicos, normas metrológicas y/o sanitarias, reglamentos y demás normas que regulan el objeto de la contratación con carácter obligatorio.",
-                Example = "Ley N° 29783 - Ley de Seguridad y Salud en el Trabajo y su Reglamento, Código Nacional de Electricidad",
-                Icon = "fas fa-gavel",
-                IsRequired = false
-            },
-            new InstruccionCampoTDR {
-                FieldName = "seguros",
-                Title = "Seguros",
-                Description = "De ser el caso, precise el tipo de seguro que se exige al proveedor, la cobertura, el plazo, monto de cobertura y oportunidad de su presentación.",
-                Example = "Seguro Complementario de Trabajo de Riesgo (SCTR) con cobertura de salud y pensión, con vigencia durante todo el plazo de ejecución del servicio",
-                Icon = "fas fa-shield-alt",
-                IsRequired = false
-            },
-            new InstruccionCampoTDR {
-                FieldName = "prestacionesAccesorias",
-                Title = "Prestaciones Accesorias",
-                Description = "De ser el caso, incluya las prestaciones accesorias como mantenimiento, soporte técnico, capacitación u otros servicios complementarios.",
-                Example = "Capacitación al personal de la entidad en el uso y mantenimiento básico del sistema implementado",
-                Icon = "fas fa-plus-circle",
-                IsRequired = false
-            },
-
-            // SECCIÓN: REQUISITOS
-            new InstruccionCampoTDR {
-                FieldName = "seccion_requisitos",
-                Title = "Requisitos del Proveedor",
-                Description = "Especifique los requisitos y condiciones que debe cumplir el proveedor para la ejecución del servicio.",
-                Icon = "fas fa-clipboard-check",
-                IsRequired = false
-            },
-            new InstruccionCampoTDR {
-                FieldName = "requisitosProveedor",
-                Title = "Requisitos del Proveedor",
-                Description = "Indique los requisitos básicos que debe cumplir el proveedor, como RUC activo y habido, y Registro Nacional de Proveedores si el monto supera 1 UIT.",
-                Icon = "fas fa-check-square",
-                IsRequired = true
-            },
-            new InstruccionCampoTDR {
-                FieldName = "experienciaProveedor",
-                Title = "Experiencia del Proveedor",
-                Description = "Detalle la experiencia requerida en servicios similares, indicando el monto facturado acumulado o la cantidad de servicios ejecutados, así como el periodo de tiempo considerado (por ejemplo, últimos 8 años).",
-                Example = "Monto facturado acumulado de S/ 50,000.00 en servicios similares durante los 8 años anteriores a la fecha de presentación de ofertas.",
-                Icon = "fas fa-medal",
-                IsRequired = true
-            },
-            new InstruccionCampoTDR {
-                FieldName = "perfilPersonal",
-                Title = "Perfil del Personal",
-                Description = "Describa el perfil profesional del personal clave requerido para ejecutar el servicio, incluyendo formación académica, experiencia y capacitación.",
-                Icon = "fas fa-user-tie",
-                IsRequired = false
-            },
-
-            // SECCIÓN: PLAZOS Y ENTREGABLES
-            new InstruccionCampoTDR {
-                FieldName = "seccion_plazos",
-                Title = "Plazos y Entregables",
-                Description = "Defina los plazos de ejecución, lugar de prestación del servicio y los entregables requeridos.",
-                Icon = "fas fa-calendar-alt",
-                IsRequired = false
-            },
-            new InstruccionCampoTDR {
-                FieldName = "lugar",
-                Title = "Lugar de Ejecución",
-                Description = "Señale el lugar donde se efectuará la prestación del servicio, especificando distrito, provincia y región.",
-                Example = "Sede Central de ELECTROSUR S.A. ubicada en Calle Zela N° 408, Distrito de Tacna, Provincia de Tacna, Región Tacna",
-                Icon = "fas fa-map-marker-alt",
-                IsRequired = true
-            },
-            new InstruccionCampoTDR {
-                FieldName = "plazo",
-                Title = "Plazo de Ejecución",
-                Description = "Definir el plazo máximo en días calendario e indicar el inicio de la ejecución (a partir del día siguiente de notificado el pedido de compra u otra condición).",
-                Example = "60 días calendario contados a partir del día siguiente de notificado el pedido de compra",
-                Icon = "fas fa-hourglass-half",
-                IsRequired = true
-            },
-            new InstruccionCampoTDR {
-                FieldName = "entregables",
-                Title = "Entregables",
-                Description = "Defina la forma de presentación del informe (único, mensual o por entregables) y detalle el contenido de cada entregable.",
-                Example = "Primer entregable (30%): Informe de diagnóstico y plan de trabajo. Segundo entregable (70%): Informe final con resultados del servicio ejecutado.",
-                Icon = "fas fa-box",
-                IsRequired = true
-            },
-            new InstruccionCampoTDR {
-                FieldName = "plazoLugar",
-                Title = "Plazo y Lugar de Presentación",
-                Description = "Especifique el plazo máximo para la presentación de cada entregable luego de culminada su ejecución y el lugar o medio de presentación.",
-                Example = "Plazo máximo de dos (02) días hábiles siguientes a la culminación de cada entregable, presentado a través de Mesa de Partes Virtual de ELECTROSUR S.A.",
-                Icon = "fas fa-clipboard-list",
-                IsRequired = true
-            },
-            new InstruccionCampoTDR {
-                FieldName = "conformidad",
-                Title = "Conformidad",
-                Description = "Indique el cargo y órgano y/o unidad orgánica responsable de otorgar la conformidad del servicio.",
-                Example = "La conformidad del servicio estará a cargo del Jefe del Departamento de Logística de ELECTROSUR S.A.",
-                Icon = "fas fa-thumbs-up",
-                IsRequired = true
-            },
-
-            // SECCIÓN: CONDICIONES
-            new InstruccionCampoTDR {
-                FieldName = "seccion_condiciones",
-                Title = "Condiciones",
-                Description = "Especifique las condiciones de contratación, pago y otros aspectos relevantes.",
-                Icon = "fas fa-file-contract",
-                IsRequired = false
-            },
-            new InstruccionCampoTDR {
-                FieldName = "sistemaContratacion",
-                Title = "Sistema de Contratación",
-                Description = "Precise el sistema de contratación: a suma alzada o a precios unitarios.",
-                Icon = "fas fa-hand-holding-usd",
-                IsRequired = true
-            },
-            new InstruccionCampoTDR {
-                FieldName = "formaCondicionesPago",
-                Title = "Forma y Condiciones de Pago",
-                Description = "Indicar si el pago será único, mensual o por entregables, así como los requisitos para el pago.",
-                Example = "Pago único, previa presentación del comprobante de pago electrónico, conformidad del servicio e informe del servicio prestado.",
-                Icon = "fas fa-money-bill-wave",
-                IsRequired = true
-            },
-            new InstruccionCampoTDR {
-                FieldName = "responsabilidad",
-                Title = "Responsabilidad del Proveedor",
-                Description = "Especifique el plazo de responsabilidad por la calidad ofrecida y los vicios ocultos del servicio, no menor a un (1) año.",
-                Example = "El proveedor es responsable por la calidad ofrecida y por los vicios ocultos del servicio por un plazo de un (1) año contado a partir de la conformidad otorgada.",
-                Icon = "fas fa-balance-scale",
-                IsRequired = true
-            },
-            new InstruccionCampoTDR {
-                FieldName = "otrasPenalidades",
-                Title = "Otras Penalidades",
-                Description = "De corresponder, establezca otras penalidades aplicables, indicando situaciones, condiciones, procedimiento de verificación y monto o porcentaje a aplicar.",
-                Icon = "fas fa-exclamation-triangle",
-                IsRequired = false
-            },
-            new InstruccionCampoTDR {
-                FieldName = "medidasSeguridad",
-                Title = "Medidas de Seguridad",
-                Description = "Indique si corresponde alto riesgo, bajo riesgo o no corresponde, considerando la calificación otorgada por el Departamento de Seguridad y Medioambiente.",
-                Icon = "fas fa-hard-hat",
-                IsRequired = true
-            }
-        };
-            }
         }
 
     }

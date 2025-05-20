@@ -140,23 +140,45 @@
             color: #5a5c69;
             margin-right: 0.5rem;
         }
-        
-        /* Sidebar */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            width: var(--sidebar-width);
-            z-index: 1090;
-            background: linear-gradient(to bottom, var(--primary-color), var(--primary-dark));
-            color: white;
-            box-shadow: var(--box-shadow);
-            transition: all var(--transition-speed) ease;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-        }
+
+/* Estilos actuales del sidebar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: var(--sidebar-width);
+    z-index: 1090; /* Actualmente el sidebar tiene z-index 1090 */
+    background: linear-gradient(to bottom, var(--primary-color), var(--primary-dark));
+    color: white;
+    box-shadow: var(--box-shadow);
+    transition: all var(--transition-speed) ease;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+/* Nuevo estilo para asegurar que los modales estén por encima del sidebar */
+.modal {
+    z-index: 1100; /* Mayor que el z-index del sidebar */
+}
+
+.modal-backdrop {
+    z-index: 1095; /* Entre el sidebar y el modal */
+}
+
+/* Para casos de modales anidados o especiales, aseguramos un z-index aún mayor */
+.modal-dialog {
+    position: relative;
+    z-index: inherit;
+}
+
+/* Para pantallas pequeñas, asegurarse de que el botón flotante no interfiera con el modal */
+@@media (max-width: 992px) {
+    .mobile-toggle-btn {
+        z-index: 1099; /* Justo debajo del modal pero encima de todo lo demás */
+    }
+}
         
         body.sidebar-collapsed .sidebar {
             width: var(--sidebar-collapsed-width);

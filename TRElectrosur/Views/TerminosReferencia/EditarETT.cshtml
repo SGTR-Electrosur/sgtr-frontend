@@ -1,6 +1,6 @@
 ﻿@model TRElectrosur.Models.TDREditViewModel
 @{
-    ViewData["Title"] = "Visualizar Término de Referencia";
+    ViewData["Title"] = "Visualizar Especificaciones Técnicas";
 
     // Deserializar los datos JSON en la vista
     var fieldsData = System.Text.Json.JsonDocument.Parse(Model.RawFieldsData);
@@ -24,50 +24,50 @@
         canEdit = false;
     }
 
-    // Listas de categorías de campos para organizar la visualización
-    var infoGeneralFields = new List<string> { "organoUnidadOrganica", "planPoi", "finalidadPublica", "objetivoContratacion" };
-    var alcancesFields = new List<string> { "alcancesServicio", "gestionRiesgos", "reglamentos", "seguros", "prestacionesAccesorias" };
-    var requisitosFields = new List<string> { "requisitosProveedor", "experienciaProveedor", "perfilPersonal", "formacionAcademica", "experienciaPersonalClave", "capacitacion", "otros" };
-    var plazosFields = new List<string> { "lugar", "plazo", "entregables", "lugarPresentacionEntregables", "plazoLugar", "conformidad" };
-    var condicionesFields = new List<string> { "sistemaContratacion", "formaCondicionesPago", "responsabilidadProveedor", "consideracionesGeneralesProductos", "otrasPenalidades", "medidasSeguridad", "clausula", "anexos" };
+    // Listas de categorías de campos para organizar la visualización según la nueva estructura para ETT
+    var infoGeneralFields = new List<string> { "organoUnidadOrganicaEETT", "planPoiEETT", "finalidadPublicaEETT", "objetivoContratacionEETT" };
+    var descripcionBienFields = new List<string> { "descripcionBienEETT" };
+    var alcancesFields = new List<string> { "gestionRiesgosEETT", "reglamentosEETT", "acondicionamientoEETT", "segurosEETT", "garantiaComercialEETT", "muestrasEETT", "prestacionesAccesoriasEETT" };
+    var requisitosFields = new List<string> { "requisitosProveedorEETT", "formacionAcademicaEETT", "experienciaLaboralEETT", "capacitacionesEETT" };
+    var plazoEntregaFields = new List<string> { "lugarEntregaEETT", "plazoEntregaEETT", "conformidadEETT", "informeActividadesEETT" };
+    var condicionesFields = new List<string> { "sistemaContratacionEETT", "formaCondicionesPagoEETT", "responsabilidadProveedorEETT", "penalidadesMoraEETT", "otrasPenalidadesEETT", "medidasSeguridadEETT", "sancionesEETT", "clausulaEETT", "anexosEETT" };
 
     // Diccionario para convertir nombres de campo técnicos a nombres amigables
     var friendlyNames = new Dictionary<string, string>
     {
-        { "organoUnidadOrganica", "Órgano y/o Unidad Orgánica" },
-        { "planPoi", "Plan POI" },
-        { "gestionRiesgos", "Gestión de Riesgos" },
-        { "finalidadPublica", "Finalidad Pública" },
-        { "objetivoContratacion", "Objetivo de la Contratación" },
-        { "alcancesServicio", "Alcances del Servicio" },
-        { "reglamentos", "Reglamentos Técnicos y Normas" },
-        { "seguros", "Seguros" },
-        { "prestacionesAccesorias", "Prestaciones Accesorias" },
-        { "requisitosProveedor", "Requisitos del Proveedor" },
-        { "experienciaProveedor", "Experiencia del Proveedor" },
-        { "perfilPersonal", "Perfil del Personal" },
-        { "formacionAcademica", "Formación Académica" },
-        { "experienciaPersonalClave", "Experiencia del Personal Clave" },
-        { "capacitacion", "Capacitación" },
-        { "otros", "Otros Requisitos" },
-        { "lugar", "Lugar de Ejecución" },
-        { "plazo", "Plazo de Ejecución" },
-        { "entregables", "Entregables" },
-        { "lugarPresentacionEntregables", "Lugar de Presentación de Entregables" },
-        { "plazoLugar", "Plazo y Lugar de Presentación" },
-        { "conformidad", "Conformidad" },
-        { "sistemaContratacion", "Sistema de Contratación" },
-        { "formaCondicionesPago", "Forma y Condiciones de Pago" },
-        { "responsabilidadProveedor", "Responsabilidad del Proveedor" },
-        { "consideracionesGeneralesProductos","Consideraciones Generales Productos"},
-        { "otrasPenalidades", "Otras Penalidades" },
-        { "medidasSeguridad", "Medidas de Seguridad" },
-        { "clausula", "Cláusulas" },
-        { "anexos", "Anexos" }
+        { "organoUnidadOrganicaEETT", "Órgano y/o Unidad Orgánica" },
+        { "planPoiEETT", "Plan POI" },
+        { "finalidadPublicaEETT", "Finalidad Pública" },
+        { "objetivoContratacionEETT", "Objetivo de la Contratación" },
+        { "descripcionBienEETT", "Descripción del Bien" },
+        { "gestionRiesgosEETT", "Gestión de Riesgos" },
+        { "reglamentosEETT", "Reglamentos Técnicos y Normas" },
+        { "acondicionamientoEETT", "Acondicionamiento, Montaje o Instalación" },
+        { "segurosEETT", "Seguros" },
+        { "garantiaComercialEETT", "Garantía Comercial" },
+        { "muestrasEETT", "Muestras" },
+        { "prestacionesAccesoriasEETT", "Prestaciones Accesorias" },
+        { "requisitosProveedorEETT", "Requisitos del Proveedor" },
+        { "formacionAcademicaEETT", "Formación Académica" },
+        { "experienciaLaboralEETT", "Experiencia Laboral" },
+        { "capacitacionesEETT", "Capacitaciones" },
+        { "lugarEntregaEETT", "Lugar de Entrega" },
+        { "plazoEntregaEETT", "Plazo de Entrega" },
+        { "conformidadEETT", "Conformidad" },
+        { "informeActividadesEETT", "Informe de las Actividades Realizadas" },
+        { "sistemaContratacionEETT", "Sistema de Contratación" },
+        { "formaCondicionesPagoEETT", "Forma y Condiciones de Pago" },
+        { "responsabilidadProveedorEETT", "Responsabilidad del Proveedor" },
+        { "penalidadesMoraEETT", "Penalidades por Mora" },
+        { "otrasPenalidadesEETT", "Otras Penalidades" },
+        { "medidasSeguridadEETT", "Medidas de Seguridad" },
+        { "sancionesEETT", "Sanciones" },
+        { "clausulaEETT", "Cláusula" },
+        { "anexosEETT", "Anexos" }
     };
 
     // Lista de campos que deben usar textarea en lugar de editor HTML
-    var textareaFields = new List<string> { "organoUnidadOrganica", "actividadPoiAccionEstrategica", "finalidadPublica" };
+    var textareaFields = new List<string> { "organoUnidadOrganicaEETT", "planPoiEETT", "finalidadPublicaEETT" };
 }
 
 <style>
@@ -94,37 +94,45 @@
     var instruccionesCampos = new Dictionary<string, string>
     {
         // Sección: Información General
-        { "organoUnidadOrganica", "INDICAR EL ÓRGANO Y/O UNIDAD ORGÁNICA, RESPONSABLE DEL REQUERIMIENTO" },
-        { "planPoi", "INDICAR EL CÓDIGO Y LA DENOMINACIÓN DEL PLAN POI" },
-        { "gestionRiesgos", "INDICAR LOS RIESGOS RELACIONADOS AL TDR" },
-        { "finalidadPublica", "INDICAR QUE SE BUSCA SATISFACER, MEJORAR Y/O ATENDER CON LA CONTRATACIÓN REQUERIDA" },
-        { "objetivoContratacion", "INDICAR CUÁL ES EL OBJETIVO DE LA CONTRATACIÓN QUE PERMITA CONOCER AL PROVEEDOR CLARAMENTE QUE BENEFICIOS PRETENDE OBTENER MEDIANTE EL PRESENTE SERVICIO" },
+        { "organoUnidadOrganicaEETT", "INDICAR EL ÓRGANO Y/O UNIDAD ORGÁNICA, RESPONSABLE DEL REQUERIMIENTO" },
+        { "planPoiEETT", "INDICAR EL CÓDIGO Y LA DENOMINACIÓN DEL PLAN POI" },
+        { "finalidadPublicaEETT", "INDICAR QUE SE BUSCA SATISFACER, MEJORAR Y/O ATENDER CON LA CONTRATACIÓN REQUERIDA" },
+        { "objetivoContratacionEETT", "INDICAR CUÁL ES EL OBJETIVO DE LA CONTRATACIÓN QUE PERMITA CONOCER AL PROVEEDOR CLARAMENTE QUE BENEFICIOS PRETENDE OBTENER, MEDIANTE LA ADQUISICIÓN DEL BIEN" },
+
+        // Sección: Descripción del Bien
+        { "descripcionBienEETT", "DETALLAR LAS CARACTERÍSTICAS FÍSICAS Y TÉCNICAS DEL BIEN, PARA SATISFACER LA NECESIDAD DE LA ENTIDAD. ASIMISMO, LA DIMENSIÓN, COMPOSICIÓN, MATERIAL, EMPAQUE, AÑO DE FABRICACIÓN MÍNIMO DEL BIEN, REPUESTOS, ACCESORIOS, CONDICIONES DE ALMACENAMIENTO, COMPATIBILIDAD CON ALGÚN EQUIPO O COMPONENTE, ENTRE OTROS" },
 
         // Sección: Alcances
-        { "alcancesServicio", "EL ÁREA USUARIA DEBERÁ INDICAR EL DETALLE DE LAS ACTIVIDADES A DESARROLLAR, ASÍ COMO EL PROCEDIMIENTO A SEGUIR PARA EL DESARROLLO DEL SERVICIO, PLAN DE TRABAJO, RECURSOS A SER PREVISTOS POR EL PROVEEDOR Y POR LA ENTIDAD PARA LA EJECUCIÓN DEL SERVICIO. EN LOS CASOS QUE CORRESPONDA, DEBERÁ INDICARSE EXPRESAMENTE SI LA PRESTACIÓN PRINCIPAL CONLLEVA A LA EJECUCIÓN DE PRESTACIONES ACCESORIAS, TALES COMO MANTENIMIENTO, SOPORTE TÉCNICO O CAPACITACIONES." },
-        { "reglamentos", "SEÑALAR REGLAMENTOS TÉCNICOS, NORMAS METROLÓGICAS Y/O SANITARIAS, REGLAMENTOS Y DEMÁS NORMAS QUE REGULAN EL OBJETO DE LA CONTRATACIÓN CON CARÁCTER OBLIGATORIO" },
-        { "seguros", "DE SER EL CASO, PRECISAR EL TIPO DE SEGURO QUE SE EXIGE AL PROVEEDOR, LA COBERTURA, EL PLAZO, MONTO DE COBERTURA Y OPORTUNIDAD DE SU PRESENTACIÓN" },
-        { "prestacionesAccesorias", "DE SER EL CASO, INCLUIR LAS PRESTACIONES ACCESORIAS QUE SE CONSIDEREN NECESARIAS" },
+        { "gestionRiesgosEETT", "INDICAR LOS RIESGOS A LOS POSIBLES EVENTOS QUE PUEDAN AFECTAR EL CUMPLIMIENTO DE LOS OBJETIVOS Y LA FINALIDAD PÚBLICA QUE PERSIGUEN AL ADQUIRIR BIENES, SERVICIOS Y OBRAS" },
+        { "reglamentosEETT", "SEÑALAR REGLAMENTOS TÉCNICOS, NORMAS METROLÓGICAS Y/O SANITARIAS, REGLAMENTOS Y DEMÁS NORMAS QUE REGULAN EL OBJETO DE LA CONTRATACIÓN CON CARÁCTER OBLIGATORIO" },
+        { "acondicionamientoEETT", "DE SER EL CASO, SE DEBE INDICAR EL LUGAR, PROCEDIMIENTO, LOS EQUIPOS Y OPERARIOS NECESARIOS, ASÍ COMO EL ESPACIO REQUERIDO PARA LA REALIZACIÓN DE LOS TRABAJOS DE INSTALACIÓN" },
+        { "segurosEETT", "DE SER EL CASO, PRECISAR EL TIPO DE SEGURO QUE SE EXIGE AL PROVEEDOR, LA COBERTURA, EL PLAZO, MONTO DE COBERTURA Y OPORTUNIDAD DE SU PRESENTACIÓN" },
+        { "garantiaComercialEETT", "LAS ÁREAS USUARIAS DEBEN INDICAR EL ALCANCE DE LA GARANTÍA, CONDICIONES DE LA GARANTÍA, PERIODO E INICIO DEL CÓMPUTO DE LA GARANTÍA" },
+        { "muestrasEETT", "SE DEBE INDICAR LOS PROCEDIMIENTOS QUE SE REALIZAR PARA VERIFICAR LA CALIDAD" },
+        { "prestacionesAccesoriasEETT", "SE PUEDE CONSIDERAR COMO PRESTACIONES ACCESORIAS AL MANTENIMIENTO PREVENTIVO, SOPORTE TÉCNICO, CAPACITACIÓN Y/O ENTRENAMIENTO DEL PERSONAL DE LA ENTIDAD, POR LO QUE SE DEBE PRECISAR EL TIPO, PROCEDIMIENTO, LUGAR, TIPO DE CERTIFICACIÓN QUE SE OTORGA, SEGÚN LA PRESTACIÓN SOLICITADA" },
 
         // Sección: Requisitos
-        { "requisitosProveedor", "Ruc activo y habido. Registro Nacional de Proveedores, de ser el caso. (solo se debe solicitar RNP en caso que el monto supere 01 UIT)" },
-        { "experienciaProveedor", "CONSIGNAR COMO EXPERIENCIA UNA DE LAS DOS OPCIONES (\"A\" O \"B\"): Alternativa A: un monto facturado acumulado equivalente (CONSIGNAR EL MONTO DE FACTURACIÓN EXPRESADO EN NÚMEROS Y LETRAS EN LA MONEDA DEL REQUERIMIENTO, EL MISMO QUE SERÁ PROPORCIONAL AL MONTO PRESUPUESTADO) o Alternativa B: la contratación de: (INDICAR LA CANTIDAD DE SERVICIOS)" },
-        { "perfilPersonal", "CONSIGNAR EL GRADO O TÍTULO PROFESIONAL REQUERIDO, CONSIDERANDO LOS NIVELES ESTABLECIDOS POR LA NORMATIVA EN LA MATERIA] DEL PERSONAL CLAVE REQUERIDO COMO [CONSIGNAR EL PERSONAL CLAVE REQUERIDO PARA EJECUTAR LA PRESTACIÓN OBJETO DE LA CONVOCATORIA DEL CUAL DEBE ACREDITARSE ESTE REQUISITO]" },
+        { "requisitosProveedorEETT", "Ruc activo y habido. Registro Nacional de Proveedores, de ser el caso. (solo se debe solicitar RNP en caso que el monto supere 01 UIT)" },
+        { "formacionAcademicaEETT", "CONSIGNAR EL GRADO O TÍTULO PROFESIONAL REQUERIDO, CONSIDERANDO LOS NIVELES ESTABLECIDOS POR LA NORMATIVA EN LA MATERIA] DEL PERSONAL CLAVE REQUERIDO COMO [CONSIGNAR EL PERSONAL CLAVE REQUERIDO PARA EJECUTAR LA PRESTACIÓN OBJETO DE LA CONVOCATORIA DEL CUAL DEBE ACREDITARSE ESTE REQUISITO]" },
+        { "experienciaLaboralEETT", "[CONSIGNAR EL TIEMPO DE EXPERIENCIA MÍNIMO] en [CONSIGNAR LOS TRABAJOS O PRESTACIONES EN LA ACTIVIDAD REQUERIDA] del personal clave requerido como [CONSIGNAR EL PUESTO, CARGO O DENOMINACIÓN DE LA POSICIÓN QUE OCUPARÁ EL PERSONAL CLAVE REQUERIDO]" },
+        { "capacitacionesEETT", "[CONSIGNAR LA CANTIDAD DE HORAS LECTIVAS HASTA UN MÁXIMO DE 120] horas lectivas, en [CONSIGNAR LA MATERIA O ÁREA DE CAPACITACIÓN] del personal clave requerido como [CONSIGNAR EL PERSONAL CLAVE REQUERIDO PARA EJECUTAR LA PRESTACIÓN OBJETO DE LA CONVOCATORIA RESPECTO DEL CUAL SE DEBE ACREDITAR ESTE REQUISITO]" },
 
         // Sección: Plazos y Entregables
-        { "lugar", "SEÑALAR EL LUGAR DONDE SE EFECTUARÁ LA PRESTACIÓN DEL SERVICIO, DONDE DEBE ESPECIFICAR DISTRITO, PROVINCIA Y REGIÓN" },
-        { "plazo", "DEFINIR EL PLAZO MÁXIMO EN DÍAS CALENDARIO, INDICAR EL INICIO DE LA EJECUCIÓN DEL SERVICIO O A PARTIR DEL DÍA SIGUIENTE DE NOTIFICADO EL PEDIDO DE COMPRA, EN CASO SE ESTABLEZCA CONDICIONES PREVIAS A LA EJECUCIÓN DEL SERVICIO, SE DEBE PRECISAR DICHO PLAZO" },
-        { "entregables", "DEFINIR LA FORMA DE PRESENTACIÓN DEL INFORME (ÚNICO, MENSUAL O POR ENTREGABLES). DE SER POR ENTREGABLE: DETALLAR EL NÚMERO DE ENTREGABLES, EL PORCENTAJE DE CADA ENTREGABLE EN RELACIÓN AL TOTAL DEL SERVICIO, EL PLAZO DE CADA ENTREGABLE (CON RELACIÓN AL NUMERAL 12.2.). Y EL CONTENIDO DE CADA ENTREGABLE (CON RELACIÓN AL NUMERAL 7. ALCANCES DEL SERVICIO)" },
-        { "lugarPresentacionEntregables", "DEFINIR EL LUGAR DE PRESENTACIÓN DE LOS ENTREGABLES" },
-        { "plazoLugar", "Una vez culminado el plazo de ejecución establecido por entregable, el contratista tendrá un plazo máximo de dos (02) días hábiles siguientes para su presentación. El (Los) entregable(s) debe(n) ser presentado(s), a través de: MESA DE PARTES PRESENCIAL O VIRTUAL O CORREO ELECTRÓNICO DE ELECTROSUR S.A." },
-        { "conformidad", "CONSIGNAR EL CARGO Y ÓRGANO Y/O UNIDAD ORGÁNICA RESPONSABLE DE OTORGAR LA CONFORMIDAD DEL SERVICIO Y REQUISITOS QUE DEBE CUMPLIR EL PROVEEDOR PARA EL OTORGAMIENTO DE LA CONFORMIDAD" },
+        { "lugarEntregaEETT", "PRECISAR LA DIRECCIÓN EXACTA DONDE SERÁN ENTREGADOS LOS BIENES EN EL ALMACÉN DE ELECTROSUR (DONDE DEBE ESPECIFICAR DISTRITO, PROVINCIA Y REGIÓN)" },
+        { "plazoEntregaEETT", "DEFINIR EL PLAZO MÁXIMO DE ENTREGA EN DÍAS CALENDARIO, INDICAR EL INICIO DEL PLAZO DE LA ENTREGA DEL BIEN O CONTADOS A PARTIR DEL DÍA SIGUIENTE DE NOTIFICADO EL PEDIDO DE COMPRA, EN CASO SE ESTABLEZCA CONDICIONES PREVIAS PARA LA ADQUISICIÓN DEL BIEN, SE DEBE PRECISAR DICHO PLAZO" },
+        { "conformidadEETT", "CONSIGNAR EL CARGO Y ÓRGANO Y/O UNIDAD ORGÁNICA RESPONSABLE DE OTORGAR LA CONFORMIDAD DEL BIEN Y PRECISAR EL PROCEDIMIENTO Y REQUISITOS QUE DEBE CUMPLIR EL PROVEEDOR PARA EL OTORGAMIENTO DE LA CONFORMIDAD" },
+        { "informeActividadesEETT", "EN CASO DE REQUERIR ACONDICIONAMIENTO, MONTAJE, INSTALACIÓN O PRESTACIONES ACCESORIAS. DETALLANDO EL CONTENIDO DEL INFORME A PRESENTAR" },
 
         // Sección: Condiciones
-        { "sistemaContratacion", "PRECISAR EL SISTEMA DE A SUMA ALZADA O A PRECIOS UNITARIOS" },
-        { "formaCondicionesPago", "EXPRESAR LA FORMA DE PAGO: UNICA, MENSUAL O POR ENTREGABLES (DE CONSIGNAR LA OPCIÓN DE ENTREGABLES DEBERÁ DE GUARDAR RELACIÓN CON EL NUMERAL 13. ENTREGABLES HACIENDO MENCIÓN EL PORCENTAJE DE PAGO)" },
-        { "responsabilidadProveedor", "CONSIGNAR TIEMPO EN AÑOS, NO MENOR DE UN (1) AÑO, CONSIDERANDO LO DISPUESTO EN EL GAL-2078-2023 DEL EXPEDIENTE 20230300012247" },
-        { "consideracionesGeneralesProductos","INDICAR LAS CONSIDERACIONES GENERALES DE LOS PRODUCTOS"  },
-        { "otrasPenalidades", "DE ACUERDO AL TIPO DE CONTRATACIÓN LAS ÁREAS USUARIAS PUEDEN ESTABLECER OTRAS PENALIDADES DIFERENTES AL RETRASO, LAS CUALES DEBEN SER OBJETIVAS, RAZONABLES Y PROPORCIONALES CON EL OBJETO DE LA CONTRATACIÓN, POR LO QUE SE DEBE PRECISAR EL LISTADO DE LAS SITUACIONES, CONDICIONES, EL PROCEDIMIENTO DE VERIFICACIÓN DE LAS OCURRENCIAS Y LOS MONTOS O PORCENTAJES A APLICAR" }
+        { "sistemaContratacionEETT", "PRECISAR EL SISTEMA DE A SUMA ALZADA O A PRECIOS UNITARIOS" },
+        { "formaCondicionesPagoEETT", "EXPRESAR LA FORMA DE PAGO: UNICA O PARCIAL (EN EL CASO DE SER PARCIAL DEBERÁ GUARDAR RELACIÓN CON LAS ENTREGAS PARCIALES Y LA CONFORMIDAD)" },
+        { "responsabilidadProveedorEETT", "CONSIGNAR TIEMPO EN AÑOS, NO MENOR DE UN (1) AÑO, CONSIDERANDO LO DISPUESTO EN EL GAL-2078-2023 DEL EXPEDIENTE 20230300012247" },
+        { "penalidadesMoraEETT", "En caso de retraso injustificado del contratista en la ejecución de las prestaciones objeto del contrato, la entidad contratante le aplica automáticamente una penalidad por mora por cada día de atraso que le sea imputable" },
+        { "otrasPenalidadesEETT", "DE ACUERDO AL TIPO DE CONTRATACIÓN LAS ÁREAS USUARIAS PUEDEN ESTABLECER OTRAS PENALIDADES DIFERENTES AL RETRASO, LAS CUALES DEBEN SER OBJETIVAS, RAZONABLES Y PROPORCIONALES CON EL OBJETO DE LA CONTRATACIÓN, POR LO QUE SE DEBE PRECISAR EL LISTADO DE LAS SITUACIONES, CONDICIONES, EL PROCEDIMIENTO DE VERIFICACIÓN DE LAS OCURRENCIAS Y LOS MONTOS O PORCENTAJES A APLICAR" },
+        { "medidasSeguridadEETT", "INDICAR SI CORRESPONDE ALTO RIESGO O BAJO RIESGO O NO CORRESPONDE" },
+        { "sancionesEETT", "El Tribunal de Contrataciones Públicas sancionará a los participantes, postores, proveedores, y subcontratistas, cuando incurran en las infracciones administrativas señaladas en la Ley General de Contrataciones Públicas" },
+        { "clausulaEETT", "ENTREGA DE RESUMEN DE VALORIZACIÓN SEGÚN ESTRUCTURA DEL MANUAL DE COSTOS DE OSINERGMIN (De corresponder)" },
+        { "anexosEETT", "INDICAR LOS ANEXOS NECESARIOS PARA LA CONTRATACIÓN, SI APLICA" }
     };
 }
 
@@ -223,13 +231,13 @@
 
             // Función para inicializar el combobox de Órgano y/o Unidad Orgánica
             function initOrganoUnidadOrganicaSelect() {
-                var organoSelect = $('#select_organoUnidadOrganica');
-                var organoValue = $('#field_organoUnidadOrganica').val().trim();
+                var organoSelect = $('#select_organoUnidadOrganicaEETT');
+                var organoValue = $('#field_organoUnidadOrganicaEETT').val().trim();
 
                 // Si el combobox no está definido, significa que estamos en modo de solo lectura
                 if (organoSelect.length === 0) {
                     // Asegurarse de que el valor se muestra correctamente en modo de solo lectura
-                    $('#readonly_organoUnidadOrganica').text(organoValue);
+                    $('#readonly_organoUnidadOrganicaEETT').text(organoValue);
                     return;
                 }
 
@@ -237,7 +245,7 @@
                 if (organoValue) {
                     // Buscar la opción que coincide con el valor existente
                     var matchFound = false;
-                    $('#select_organoUnidadOrganica option').each(function () {
+                    $('#select_organoUnidadOrganicaEETT option').each(function () {
                         if ($(this).val() === organoValue) {
                             matchFound = true;
                             organoSelect.val(organoValue);
@@ -256,36 +264,36 @@
 
             // Función mejorada para inicializar los selectores personalizados
             function initCustomSelects() {
-                // Procesar formaCondicionesPago
-                var formaPagoSelect = $('#select_formaCondicionesPago');
-                var formaPagoValue = $('#field_formaCondicionesPago').val().trim();
+                // Procesar formaCondicionesPagoEETT
+                var formaPagoSelect = $('#select_formaCondicionesPagoEETT');
+                var formaPagoValue = $('#field_formaCondicionesPagoEETT').val().trim();
 
                 // Comprobar si estamos en modo de solo lectura
                 if (formaPagoSelect.length === 0) {
                     // Mostrar el valor en modo solo lectura
-                    $('#readonly_formaCondicionesPago').text(formaPagoValue);
+                    $('#readonly_formaCondicionesPagoEETT').text(formaPagoValue);
                 } else {
                     // Modo editable - establecer el valor en el combobox
                     if (formaPagoValue.toLowerCase().includes('única') || formaPagoValue.toLowerCase().includes('unica')) {
                         formaPagoSelect.val('Única');
                     } else if (formaPagoValue.toLowerCase().includes('mensual')) {
                         formaPagoSelect.val('Mensual');
-                    } else if (formaPagoValue.toLowerCase().includes('entregables')) {
-                        formaPagoSelect.val('Por Entregables');
+                    } else if (formaPagoValue.toLowerCase().includes('parcial')) {
+                        formaPagoSelect.val('Parcial');
                     } else {
                         // Si no coincide con ninguno, mantener "Seleccione..."
                         formaPagoSelect.val("");
                     }
                 }
 
-                // Procesar medidasSeguridad
-                var seguridadSelect = $('#select_medidasSeguridad');
-                var seguridadValue = $('#field_medidasSeguridad').val().trim();
+                // Procesar medidasSeguridadEETT
+                var seguridadSelect = $('#select_medidasSeguridadEETT');
+                var seguridadValue = $('#field_medidasSeguridadEETT').val().trim();
 
                 // Comprobar si estamos en modo de solo lectura
                 if (seguridadSelect.length === 0) {
                     // Mostrar el valor en modo solo lectura
-                    $('#readonly_medidasSeguridad').text(seguridadValue);
+                    $('#readonly_medidasSeguridadEETT').text(seguridadValue);
                 } else {
                     // Modo editable - establecer el valor en el combobox
                     if (seguridadValue.toLowerCase().includes('alto riesgo')) {
@@ -299,9 +307,26 @@
                         seguridadSelect.val("");
                     }
                 }
+                
+                // Procesar sistemaContratacionEETT
+                var sistemaSelect = $('#select_sistemaContratacionEETT');
+                var sistemaValue = $('#field_sistemaContratacionEETT').val().trim();
 
-                console.log('Valor de formaCondicionesPago:', formaPagoValue, '→ Seleccionado:', formaPagoSelect.length ? formaPagoSelect.val() : 'Modo solo lectura');
-                console.log('Valor de medidasSeguridad:', seguridadValue, '→ Seleccionado:', seguridadSelect.length ? seguridadSelect.val() : 'Modo solo lectura');
+                // Comprobar si estamos en modo de solo lectura
+                if (sistemaSelect.length === 0) {
+                    // Mostrar el valor en modo solo lectura
+                    $('#readonly_sistemaContratacionEETT').text(sistemaValue);
+                } else {
+                    // Modo editable - establecer el valor en el combobox
+                    if (sistemaValue.toLowerCase().includes('suma alzada')) {
+                        sistemaSelect.val('Suma Alzada');
+                    } else if (sistemaValue.toLowerCase().includes('precios unitarios')) {
+                        sistemaSelect.val('Precios Unitarios');
+                    } else {
+                        // Si no coincide con ninguno, mantener "Seleccione..."
+                        sistemaSelect.val("");
+                    }
+                }
             }
 
             $(document).ready(function () {
@@ -318,6 +343,9 @@
                     $(this).css('color', '#2a3c7d');
                 });
 
+                // Objeto para almacenar las instancias de CKEditor
+                var editorInstances = {};
+
                 // Inicializar editores HTML
                 $('.html-editor').each(function () {
                     const editorId = $(this).attr('id');
@@ -329,6 +357,9 @@
                             toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'insertTable', 'undo', 'redo']
                         })
                         .then(editor => {
+                            // Guardar la instancia del editor para usar más tarde
+                            editorInstances[editorId] = editor;
+
                             // Hacer el editor de solo lectura si es necesario
                             if (isReadOnly) {
                                 editor.isReadOnly = true;
@@ -338,15 +369,54 @@
                             editor.model.document.on('change:data', () => {
                                 document.getElementById(fieldId).value = editor.getData();
                             });
+
+                            // También necesitamos controlar cambios en acondicionamientoEETT
+                            if (editorId === 'editor_acondicionamientoEETT') {
+                                editor.model.document.on('change:data', () => {
+                                    // Si acondicionamientoEETT está vacío, vaciar también segurosEETT
+                                    if (editor.getData().trim() === '') {
+                                        const segurosEditor = editorInstances['editor_segurosEETT'];
+                                        if (segurosEditor) {
+                                            segurosEditor.setData('');
+                                        }
+                                        $('#field_segurosEETT').val('');
+                                    }
+                                });
+                            }
                         })
                         .catch(error => {
                             console.error(error);
                         });
                 });
 
-                // Proceso antes de enviar el formulario para asegurar que todos los datos estén en sus textareas correspondientes
+                // Script para manejar la dependencia entre acondicionamientoEETT y segurosEETT
                 $('#formEditar').on('submit', function (e) {
-                    // No hay necesidad de prevenir el submit por defecto, queremos que el formulario se envíe normalmente
+                    // Obtener los valores de los campos
+                    var acondicionamientoValue = '';
+                    var acondicionamientoField = $('#field_acondicionamientoEETT');
+
+                    // Si existe el campo
+                    if (acondicionamientoField.length > 0) {
+                        acondicionamientoValue = acondicionamientoField.val().trim();
+                    }
+
+                    // Si acondicionamientoEETT está vacío, vaciar también segurosEETT
+                    if (acondicionamientoValue === '') {
+                        // Buscar el campo segurosEETT
+                        var segurosField = $('#field_segurosEETT');
+
+                        // Si existe el campo
+                        if (segurosField.length > 0) {
+                            // Vaciar el campo
+                            segurosField.val('');
+
+                            // Como estamos usando CKEditor 5, no podemos acceder directamente a una instancia global
+                            // Por lo tanto, almacenaremos la referencia cuando inicialicemos el editor
+                        }
+                    }
+
+                    // Continuar con el envío normal del formulario
+                    return true;
                 });
 
                 // ====================================
@@ -515,7 +585,9 @@
                 }
             });
         </script>
-    }        <div class="d-flex align-items-center">
+    }        
+
+    <div class="d-flex align-items-center">
         <a href="@Url.Action("Index", "TerminosReferencia")" class="btn btn-outline-secondary" style="margin-right:15px;">
             <i class="fas fa-arrow-left me-2"></i> Volver al listado
         </a>
@@ -538,9 +610,6 @@
     </div>
     <div class="card-body">
         <div class="row">
-@*             <div class="col-md-3">
-                <p><strong>Versión:</strong> @version.GetProperty("VersionNumber").GetInt32()</p>
-            </div> *@
             <div class="col-md-3">
                 <p><strong>Estado:</strong> @version.GetProperty("StateName").GetString()</p>
             </div>
@@ -572,6 +641,13 @@
                     type="button" role="tab" aria-controls="pane-info" aria-selected="true"
                     style="color: #2a3c7d;">
                 <i class="fas fa-info-circle me-1"></i> Información General
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-descripcion" data-bs-toggle="tab" data-bs-target="#pane-descripcion"
+                    type="button" role="tab" aria-controls="pane-descripcion" aria-selected="false"
+                    style="color: #495057;">
+                <i class="fas fa-box me-1"></i> Descripción del Bien
             </button>
         </li>
         <li class="nav-item" role="presentation">
@@ -607,20 +683,13 @@
     <!-- Contenido de las pestañas -->
     <div class="tab-content" id="tdrTabsContent">
 
-@*         Pestaña DATOS GENERALES *@
-
+        <!-- Pestaña INFORMACIÓN GENERAL -->
         <div class="tab-pane fade show active" id="pane-info" role="tabpanel" aria-labelledby="tab-info">
             @foreach (var fieldElement in fields.EnumerateArray())
             {
                 string fieldName = fieldElement.GetProperty("FieldName").GetString();
                 string fieldContent = fieldElement.GetProperty("HtmlContent").GetString();
                 string fieldComment = fieldElement.GetProperty("comment").GetString();
-
-@*                 // Saltar el campo denominacionContratacion (ID 4)
-                if (fieldName == "denominacionContratacion")
-                {
-                    continue; // Salta a la siguiente iteración del bucle
-                } *@
 
                 if (infoGeneralFields.Contains(fieldName))
                 {
@@ -638,7 +707,7 @@
                             }
 
                             <div class="mb-3">
-                                @if (fieldName == "organoUnidadOrganica")
+                                @if (fieldName == "organoUnidadOrganicaEETT")
                                 {
                                     @if (canEdit)
                                     {
@@ -722,8 +791,71 @@
             }
         </div>
 
-        @* PESTAÑA "ALCANCES" *@
-        <!-- Pestaña Alcances -->
+        <!-- Pestaña DESCRIPCIÓN DEL BIEN -->
+        <div class="tab-pane fade" id="pane-descripcion" role="tabpanel" aria-labelledby="tab-descripcion">
+            @foreach (var fieldElement in fields.EnumerateArray())
+            {
+                string fieldName = fieldElement.GetProperty("FieldName").GetString();
+                string fieldContent = fieldElement.GetProperty("HtmlContent").GetString();
+                string fieldComment = fieldElement.GetProperty("comment").GetString();
+
+                if (descripcionBienFields.Contains(fieldName))
+                {
+                    <div class="card shadow-sm mb-3">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">@(friendlyNames.ContainsKey(fieldName) ? friendlyNames[fieldName] : fieldName)</h6>
+                        </div>
+                        <div class="card-body">
+                            @* Insertar instrucciones del campo si existen *@
+                            @if (instruccionesCampos.ContainsKey(fieldName))
+                            {
+                                <div class="campo-instruccion">
+                                    <p>@instruccionesCampos[fieldName]</p>
+                                </div>
+                            }
+
+                            <div class="mb-3">
+                                @if (textareaFields.Contains(fieldName))
+                                {
+                                    <textarea class="form-control" name="fields[@fieldName]" rows="4" @(canEdit ? "" : "readonly")>@fieldContent</textarea>
+                                }
+                                else
+                                {
+                                    <div id="editor_@fieldName" class="html-editor" @(canEdit ? "" : "data-readonly='true'")>@Html.Raw(fieldContent)</div>
+                                    <textarea name="fields[@fieldName]" id="field_@fieldName" class="d-none">@fieldContent</textarea>
+                                }
+                            </div>
+
+                            <!-- Campo de observaciones -->
+                            <div class="mt-3">
+                                @if (isAdmin && canEdit)
+                                {
+                                    <label class="form-label">Observaciones</label>
+                                    <textarea class="form-control" name="observations[@fieldName]" rows="2">@fieldComment</textarea>
+                                }
+                                else
+                                {
+                                    @if (!string.IsNullOrEmpty(fieldComment))
+                                    {
+                                        <label class="form-label">Observaciones</label>
+                                        <div class="observacion-destacada">
+                                            <i class="fas fa-exclamation-circle me-2"></i>@fieldComment
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <label class="form-label">Sin Observaciones</label>
+                                        <textarea class="form-control" readonly rows="2" style="display:none;">@fieldComment</textarea>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- Pestaña ALCANCES -->
         <div class="tab-pane fade" id="pane-alcances" role="tabpanel" aria-labelledby="tab-alcances">
             @foreach (var fieldElement in fields.EnumerateArray())
             {
@@ -787,8 +919,7 @@
             }
         </div>
 
-        @* PESTAÑA "REQUISITOS" *@
-        <!-- Pestaña Requisitos -->
+        <!-- Pestaña REQUISITOS -->
         <div class="tab-pane fade" id="pane-requisitos" role="tabpanel" aria-labelledby="tab-requisitos">
             @foreach (var fieldElement in fields.EnumerateArray())
             {
@@ -852,201 +983,15 @@
             }
         </div>
 
-        @* PESTAÑA "PLAZOS Y ENTREGABLES" *@
-        <!-- Pestaña Plazos y Entregables -->
-        <div class="tab-pane fade" id="pane-plazos" role="tabpanel" aria-labelledby="tab-plazos">
-            @foreach (var fieldElement in fields.EnumerateArray())
-            {
-                string fieldName = fieldElement.GetProperty("FieldName").GetString();
-                string fieldContent = fieldElement.GetProperty("HtmlContent").GetString();
-                string fieldComment = fieldElement.GetProperty("comment").GetString();
-
-                if (plazosFields.Contains(fieldName))
+            <!-- Pestaña PLAZOS Y ENTREGABLES -->
+            <div class="tab-pane fade" id="pane-plazos" role="tabpanel" aria-labelledby="tab-plazos">
+                @foreach (var fieldElement in fields.EnumerateArray())
                 {
-                    <div class="card shadow-sm mb-3">
-                        <div class="card-header bg-light">
-                            <h6 class="mb-0">@(friendlyNames.ContainsKey(fieldName) ? friendlyNames[fieldName] : fieldName)</h6>
-                        </div>
-                        <div class="card-body">
-                            @* Insertar instrucciones del campo si existen *@
-                            @if (instruccionesCampos.ContainsKey(fieldName))
-                            {
-                                <div class="campo-instruccion">
-                                    <p>@instruccionesCampos[fieldName]</p>
-                                </div>
-                            }
+                    string fieldName = fieldElement.GetProperty("FieldName").GetString();
+                    string fieldContent = fieldElement.GetProperty("HtmlContent").GetString();
+                    string fieldComment = fieldElement.GetProperty("comment").GetString();
 
-                            <div class="mb-3">
-                                @if (textareaFields.Contains(fieldName))
-                                {
-                                    <textarea class="form-control" name="fields[@fieldName]" rows="4" @(canEdit ? "" : "readonly")>@fieldContent</textarea>
-                                }
-                                else
-                                {
-                                    <div id="editor_@fieldName" class="html-editor" @(canEdit ? "" : "data-readonly='true'")>@Html.Raw(fieldContent)</div>
-                                    <textarea name="fields[@fieldName]" id="field_@fieldName" class="d-none">@fieldContent</textarea>
-                                }
-                            </div>
-
-                            <!-- Campo de observaciones -->
-                            <div class="mt-3">
-                                @if (isAdmin && canEdit)
-                                {
-                                    <label class="form-label">Observaciones</label>
-                                    <textarea class="form-control" name="observations[@fieldName]" rows="2">@fieldComment</textarea>
-                                }
-                                else
-                                {
-                                    @if (!string.IsNullOrEmpty(fieldComment))
-                                    {
-                                        <label class="form-label">Observaciones</label>
-                                        <div class="observacion-destacada">
-                                            <i class="fas fa-exclamation-circle me-2"></i>@fieldComment
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <label class="form-label">Sin Observaciones</label>
-                                        <textarea class="form-control" readonly rows="2" style="display:none;">@fieldComment</textarea>
-                                    }
-                                }
-                            </div>
-                        </div>
-                    </div>
-                }
-            }
-        </div>
-
-        @* PESTAÑA "CONDICIONES" *@
-        <!-- Pestaña Condiciones -->
-        <div class="tab-pane fade" id="pane-condiciones" role="tabpanel" aria-labelledby="tab-condiciones">
-            @foreach (var fieldElement in fields.EnumerateArray())
-            {
-                string fieldName = fieldElement.GetProperty("FieldName").GetString();
-                string fieldContent = fieldElement.GetProperty("HtmlContent").GetString();
-                string fieldComment = fieldElement.GetProperty("comment").GetString();
-
-                @if (fieldName == "formaCondicionesPago")
-                {
-                    <div class="card shadow-sm mb-3">
-                        <div class="card-header bg-light">
-                            <h6 class="mb-0">@(friendlyNames.ContainsKey(fieldName) ? friendlyNames[fieldName] : fieldName)</h6>
-                        </div>
-                        <div class="card-body">
-                            @* Insertar instrucciones del campo si existen *@
-                            @if (instruccionesCampos.ContainsKey(fieldName))
-                            {
-                                <div class="campo-instruccion">
-                                    <p>@instruccionesCampos[fieldName]</p>
-                                </div>
-                            }
-
-                            <div class="mb-3">
-                                @if (canEdit)
-                                {
-                                    <select class="form-select campo-select" id="select_@fieldName" onchange="$('#field_@fieldName').val(this.value)">
-                                        <option value="">Seleccione...</option>
-                                        <option value="Única">Única</option>
-                                        <option value="Mensual">Mensual</option>
-                                        <option value="Por Entregables">Por Entregables</option>
-                                    </select>
-                                    <textarea name="fields[@fieldName]" id="field_@fieldName" class="d-none">@fieldContent</textarea>
-                                }
-                                else
-                                {
-                                    <input type="text" class="form-control" value="@fieldContent" readonly>
-                                    <textarea name="fields[@fieldName]" id="field_@fieldName" class="d-none">@fieldContent</textarea>
-                                }
-                            </div>
-
-                            <!-- Campo de observaciones -->
-                            <div class="mt-3">
-                                @if (isAdmin && canEdit)
-                                {
-                                    <label class="form-label">Observaciones</label>
-                                    <textarea class="form-control" name="observations[@fieldName]" rows="2">@fieldComment</textarea>
-                                }
-                                else
-                                {
-                                    @if (!string.IsNullOrEmpty(fieldComment))
-                                    {
-                                        <label class="form-label">Observaciones</label>
-                                        <div class="observacion-destacada">
-                                            <i class="fas fa-exclamation-circle me-2"></i>@fieldComment
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <label class="form-label">Sin Observaciones</label>
-                                        <textarea class="form-control" readonly rows="2" style="display:none;">@fieldComment</textarea>
-                                    }
-                                }
-                            </div>
-                        </div>
-                    </div>
-                }
-                else if (fieldName == "medidasSeguridad")
-                {
-                    <div class="card shadow-sm mb-3">
-                        <div class="card-header bg-light">
-                            <h6 class="mb-0">@(friendlyNames.ContainsKey(fieldName) ? friendlyNames[fieldName] : fieldName)</h6>
-                        </div>
-                        <div class="card-body">
-                            @* Insertar instrucciones del campo si existen *@
-                            @if (instruccionesCampos.ContainsKey(fieldName))
-                            {
-                                <div class="campo-instruccion">
-                                    <p>@instruccionesCampos[fieldName]</p>
-                                </div>
-                            }
-
-                            <div class="mb-3">
-                                @if (canEdit)
-                                {
-                                    <select class="form-select campo-select" id="select_@fieldName" onchange="$('#field_@fieldName').val(this.value)">
-                                        <option value="">Seleccione...</option>
-                                        <option value="Alto Riesgo">Alto Riesgo</option>
-                                        <option value="Bajo Riesgo">Bajo Riesgo</option>
-                                        <option value="No Corresponde">No Corresponde</option>
-                                    </select>
-                                    <textarea name="fields[@fieldName]" id="field_@fieldName" class="d-none">@fieldContent</textarea>
-                                }
-                                else
-                                {
-                                    <input type="text" class="form-control" value="@fieldContent" readonly>
-                                    <textarea name="fields[@fieldName]" id="field_@fieldName" class="d-none">@fieldContent</textarea>
-                                }
-                            </div>
-
-                            <!-- Campo de observaciones -->
-                            <div class="mt-3">
-                                @if (isAdmin && canEdit)
-                                {
-                                    <label class="form-label">Observaciones</label>
-                                    <textarea class="form-control" name="observations[@fieldName]" rows="2">@fieldComment</textarea>
-                                }
-                                else
-                                {
-                                    @if (!string.IsNullOrEmpty(fieldComment))
-                                    {
-                                        <label class="form-label">Observaciones</label>
-                                        <div class="observacion-destacada">
-                                            <i class="fas fa-exclamation-circle me-2"></i>@fieldComment
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <label class="form-label">Sin Observaciones</label>
-                                        <textarea class="form-control" readonly rows="2" style="display:none;">@fieldComment</textarea>
-                                    }
-                                }
-                            </div>
-                        </div>
-                    </div>
-                }
-                else
-                {
-                    if (condicionesFields.Contains(fieldName))
+                    if (plazoEntregaFields.Contains(fieldName))
                     {
                         <div class="card shadow-sm mb-3">
                             <div class="card-header bg-light">
@@ -1100,24 +1045,265 @@
                         </div>
                     }
                 }
-            }
+            </div>
+
+            <!-- Pestaña CONDICIONES -->
+            <div class="tab-pane fade" id="pane-condiciones" role="tabpanel" aria-labelledby="tab-condiciones">
+                @foreach (var fieldElement in fields.EnumerateArray())
+                {
+                    string fieldName = fieldElement.GetProperty("FieldName").GetString();
+                    string fieldContent = fieldElement.GetProperty("HtmlContent").GetString();
+                    string fieldComment = fieldElement.GetProperty("comment").GetString();
+
+                    @if (fieldName == "formaCondicionesPagoEETT")
+                    {
+                        <div class="card shadow-sm mb-3">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">@(friendlyNames.ContainsKey(fieldName) ? friendlyNames[fieldName] : fieldName)</h6>
+                            </div>
+                            <div class="card-body">
+                                @* Insertar instrucciones del campo si existen *@
+                                @if (instruccionesCampos.ContainsKey(fieldName))
+                                {
+                                    <div class="campo-instruccion">
+                                        <p>@instruccionesCampos[fieldName]</p>
+                                    </div>
+                                }
+
+                                <div class="mb-3">
+                                    @if (canEdit)
+                                    {
+                                        <select class="form-select campo-select" id="select_@fieldName" onchange="$('#field_@fieldName').val(this.value)">
+                                            <option value="">Seleccione...</option>
+                                            <option value="Única">Única</option>
+                                            <option value="Parcial">Parcial</option>
+                                        </select>
+                                        <textarea name="fields[@fieldName]" id="field_@fieldName" class="d-none">@fieldContent</textarea>
+                                    }
+                                    else
+                                    {
+                                        <input type="text" class="form-control" value="@fieldContent" readonly>
+                                        <textarea name="fields[@fieldName]" id="field_@fieldName" class="d-none">@fieldContent</textarea>
+                                    }
+                                </div>
+
+                                <!-- Campo de observaciones -->
+                                <div class="mt-3">
+                                    @if (isAdmin && canEdit)
+                                    {
+                                        <label class="form-label">Observaciones</label>
+                                        <textarea class="form-control" name="observations[@fieldName]" rows="2">@fieldComment</textarea>
+                                    }
+                                    else
+                                    {
+                                        @if (!string.IsNullOrEmpty(fieldComment))
+                                        {
+                                            <label class="form-label">Observaciones</label>
+                                            <div class="observacion-destacada">
+                                                <i class="fas fa-exclamation-circle me-2"></i>@fieldComment
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <label class="form-label">Sin Observaciones</label>
+                                            <textarea class="form-control" readonly rows="2" style="display:none;">@fieldComment</textarea>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else if (fieldName == "medidasSeguridadEETT")
+                    {
+                        <div class="card shadow-sm mb-3">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">@(friendlyNames.ContainsKey(fieldName) ? friendlyNames[fieldName] : fieldName)</h6>
+                            </div>
+                            <div class="card-body">
+                                @* Insertar instrucciones del campo si existen *@
+                                @if (instruccionesCampos.ContainsKey(fieldName))
+                                {
+                                    <div class="campo-instruccion">
+                                        <p>@instruccionesCampos[fieldName]</p>
+                                    </div>
+                                }
+
+                                <div class="mb-3">
+                                    @if (canEdit)
+                                    {
+                                        <select class="form-select campo-select" id="select_@fieldName" onchange="$('#field_@fieldName').val(this.value)">
+                                            <option value="">Seleccione...</option>
+                                            <option value="Alto Riesgo">Alto Riesgo</option>
+                                            <option value="Bajo Riesgo">Bajo Riesgo</option>
+                                            <option value="No Corresponde">No Corresponde</option>
+                                        </select>
+                                        <textarea name="fields[@fieldName]" id="field_@fieldName" class="d-none">@fieldContent</textarea>
+                                    }
+                                    else
+                                    {
+                                        <input type="text" class="form-control" value="@fieldContent" readonly>
+                                        <textarea name="fields[@fieldName]" id="field_@fieldName" class="d-none">@fieldContent</textarea>
+                                    }
+                                </div>
+
+                                <!-- Campo de observaciones -->
+                                <div class="mt-3">
+                                    @if (isAdmin && canEdit)
+                                    {
+                                        <label class="form-label">Observaciones</label>
+                                        <textarea class="form-control" name="observations[@fieldName]" rows="2">@fieldComment</textarea>
+                                    }
+                                    else
+                                    {
+                                        @if (!string.IsNullOrEmpty(fieldComment))
+                                        {
+                                            <label class="form-label">Observaciones</label>
+                                            <div class="observacion-destacada">
+                                                <i class="fas fa-exclamation-circle me-2"></i>@fieldComment
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <label class="form-label">Sin Observaciones</label>
+                                            <textarea class="form-control" readonly rows="2" style="display:none;">@fieldComment</textarea>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else if (fieldName == "sistemaContratacionEETT")
+                    {
+                        <div class="card shadow-sm mb-3">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">@(friendlyNames.ContainsKey(fieldName) ? friendlyNames[fieldName] : fieldName)</h6>
+                            </div>
+                            <div class="card-body">
+                                @* Insertar instrucciones del campo si existen *@
+                                @if (instruccionesCampos.ContainsKey(fieldName))
+                                {
+                                    <div class="campo-instruccion">
+                                        <p>@instruccionesCampos[fieldName]</p>
+                                    </div>
+                                }
+
+                                <div class="mb-3">
+                                    @if (canEdit)
+                                    {
+                                        <select class="form-select campo-select" id="select_@fieldName" onchange="$('#field_@fieldName').val(this.value)">
+                                            <option value="">Seleccione...</option>
+                                            <option value="Suma Alzada">Suma Alzada</option>
+                                            <option value="Precios Unitarios">Precios Unitarios</option>
+                                        </select>
+                                        <textarea name="fields[@fieldName]" id="field_@fieldName" class="d-none">@fieldContent</textarea>
+                                    }
+                                    else
+                                    {
+                                        <input type="text" class="form-control" value="@fieldContent" readonly>
+                                        <textarea name="fields[@fieldName]" id="field_@fieldName" class="d-none">@fieldContent</textarea>
+                                    }
+                                </div>
+
+                                <!-- Campo de observaciones -->
+                                <div class="mt-3">
+                                    @if (isAdmin && canEdit)
+                                    {
+                                        <label class="form-label">Observaciones</label>
+                                        <textarea class="form-control" name="observations[@fieldName]" rows="2">@fieldComment</textarea>
+                                    }
+                                    else
+                                    {
+                                        @if (!string.IsNullOrEmpty(fieldComment))
+                                        {
+                                            <label class="form-label">Observaciones</label>
+                                            <div class="observacion-destacada">
+                                                <i class="fas fa-exclamation-circle me-2"></i>@fieldComment
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <label class="form-label">Sin Observaciones</label>
+                                            <textarea class="form-control" readonly rows="2" style="display:none;">@fieldComment</textarea>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        if (condicionesFields.Contains(fieldName))
+                        {
+                            <div class="card shadow-sm mb-3">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">@(friendlyNames.ContainsKey(fieldName) ? friendlyNames[fieldName] : fieldName)</h6>
+                                </div>
+                                <div class="card-body">
+                                    @* Insertar instrucciones del campo si existen *@
+                                    @if (instruccionesCampos.ContainsKey(fieldName))
+                                    {
+                                        <div class="campo-instruccion">
+                                            <p>@instruccionesCampos[fieldName]</p>
+                                        </div>
+                                    }
+
+                                    <div class="mb-3">
+                                        @if (textareaFields.Contains(fieldName))
+                                        {
+                                            <textarea class="form-control" name="fields[@fieldName]" rows="4" @(canEdit ? "" : "readonly")>@fieldContent</textarea>
+                                        }
+                                        else
+                                        {
+                                            <div id="editor_@fieldName" class="html-editor" @(canEdit ? "" : "data-readonly='true'")>@Html.Raw(fieldContent)</div>
+                                            <textarea name="fields[@fieldName]" id="field_@fieldName" class="d-none">@fieldContent</textarea>
+                                        }
+                                    </div>
+
+                                    <!-- Campo de observaciones -->
+                                    <div class="mt-3">
+                                        @if (isAdmin && canEdit)
+                                        {
+                                            <label class="form-label">Observaciones</label>
+                                            <textarea class="form-control" name="observations[@fieldName]" rows="2">@fieldComment</textarea>
+                                        }
+                                        else
+                                        {
+                                            @if (!string.IsNullOrEmpty(fieldComment))
+                                            {
+                                                <label class="form-label">Observaciones</label>
+                                                <div class="observacion-destacada">
+                                                    <i class="fas fa-exclamation-circle me-2"></i>@fieldComment
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <label class="form-label">Sin Observaciones</label>
+                                                <textarea class="form-control" readonly rows="2" style="display:none;">@fieldComment</textarea>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+            </div>
+
         </div>
 
-    </div>
+        <!-- Botones de acción -->
+        <div class="d-flex justify-content-between mt-4 mb-5">
+            <a href="@Url.Action("Index", "TerminosReferencia")" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Volver al listado
+            </a>
 
-    <!-- Botones de acción -->
-    <div class="d-flex justify-content-between mt-4 mb-5">
-        <a href="@Url.Action("Index", "TerminosReferencia")" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-1"></i> Volver al listado
-        </a>
-
-        @if (canEdit)
-        {
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save me-1"></i> Guardar Cambios
-            </button>
-        }
-    </div>
+            @if (canEdit)
+            {
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-1"></i> Guardar Cambios
+                </button>
+            }
+        </div>
 </form>
 
 
@@ -1297,5 +1483,3 @@
         </div>
     </div>
 </div>
-
-

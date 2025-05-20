@@ -49,6 +49,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Título</th>
+                            <th>Tipo</th>
                             <th>Creado por</th>
                             <th>Fecha Creación</th>
                             <th>Última Actualización</th>
@@ -64,6 +65,7 @@
                                 <tr>
                                     <td>@tdr.TDRID</td>
                                     <td>@tdr.Title</td>
+                                    <td>@tdr.TypeName</td>
                                     <td>@tdr.CreatedByUserName</td>
                                     <td>@tdr.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
                                     <td>@(tdr.UpdatedAt.HasValue ? tdr.UpdatedAt.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm") : "-")</td>
