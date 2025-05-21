@@ -408,7 +408,7 @@
                                     .then(success => {
                                         if (success) {
                                             showToast('Éxito', 'TDR marcado como observado y nueva versión creada', 'success');
-                                            setTimeout(() => { location.reload(); }, 1500);
+                                            // Ya no es necesario recargar aquí, lo hará la función cambiarEstado
                                         }
                                     });
                             }
@@ -422,8 +422,7 @@
                         .then(success => {
                             if (success) {
                                 $('#modalAprobarTDR').modal('hide');
-                                showToast('Éxito', 'TDR aprobado correctamente', 'success');
-                                setTimeout(() => { location.reload(); }, 1500);
+                                // No es necesario recargar aquí
                             }
                         });
                 });
@@ -433,8 +432,7 @@
                         .then(success => {
                             if (success) {
                                 $('#modalEnviarRevision').modal('hide');
-                                showToast('Éxito', 'TDR enviado para revisión', 'success');
-                                setTimeout(() => { location.reload(); }, 1500);
+                                // No es necesario recargar aquí
                             }
                         });
                 });
@@ -444,8 +442,19 @@
                         .then(success => {
                             if (success) {
                                 $('#modalEnviarCorreccion').modal('hide');
-                                showToast('Éxito', 'Correcciones enviadas para revisión', 'success');
-                                setTimeout(() => { location.reload(); }, 1500);
+                                // No es necesario recargar aquí
+                            }
+                        });
+                });
+
+                $('#btnConfirmarAnular').on('click', function () {
+                    const reason = $('#anulacionMotivo').val().trim() || 'TDR anulado por administrador';
+
+                    cambiarEstado(tdrId, 6, reason) // 6 = Anulado
+                        .then(success => {
+                            if (success) {
+                                $('#modalAnularTDR').modal('hide');
+                                // No es necesario recargar aquí
                             }
                         });
                 });
@@ -455,14 +464,22 @@
                         const baseUrl = '@Url.Action("CambiarEstado", "TerminosReferencia")';
                         const url = `${baseUrl}?id=${id}&newStateId=${newStateId}&reason=${encodeURIComponent(reason)}`;
 
+                        console.log('Enviando petición a:', url); // Para depuración
+
                         const response = await $.ajax({
                             url: url,
                             type: 'POST',
                             dataType: 'json'
                         });
 
+                        console.log('Respuesta recibida:', response); // Para depuración
+
                         if (response.success) {
-                            window.location.href = response.redirectUrl;
+                            // En lugar de redireccionar, simplemente recargamos la página actual
+                            showToast('Éxito', 'Operación realizada correctamente', 'success');
+                            setTimeout(() => {
+                                window.location.reload(); // Recargar la página actual
+                            }, 1500);
                             return true;
                         } else {
                             showToast('Error', response.message || 'No se pudo cambiar el estado del TDR', 'error');
@@ -491,7 +508,7 @@
                         return response.success;
                     } catch (error) {
                         console.error('Error al crear nueva versión:', error);
-                        showToast('Error', 'No se pudo crear una nueva versión del TDR', 'error');
+                        //showToast('Error', 'No se pudo crear una nueva versión del TDR', 'error');
                         return false;
                     }
                 }
@@ -1191,10 +1208,9 @@
                         }
                         @if (Model.TDR.CurrentStateID == 3) // Observado
                         {
-                            <div class="alert alert-info mb-0">
-                                <i class="fas fa-info-circle me-2"></i>
-                                El TDR está observado. A la espera de las correcciones enviadas por el usuario.
-                            </div>
+                            <button type="button" class="btn btn-primary" id="btnEnviarCorreccion">
+                                <i class="fas fa-paper-plane me-2"></i>Enviar Corrección
+                            </button>
                         }
                         @if (Model.TDR.CurrentStateID == 5) // Aprobado
                         {
@@ -1248,7 +1264,6 @@
                                 El TDR ha sido anulado. Ya no se pueden realizar modificaciones.
                             </div>
                         }
-
                     </div>
                 }
                 @if (isAdmin && Model.TDR.CurrentStateID != 6) // Si es admin y el TDR no está ya anulado
