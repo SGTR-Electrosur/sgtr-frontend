@@ -520,17 +520,18 @@
                         });
                 });
 
-                // Función para cambiar el estado del TDR
                 async function cambiarEstado(id, newStateId, reason) {
                     try {
+                        const baseUrl = '@Url.Action("CambiarEstado", "TerminosReferencia")';
+                        const url = `${baseUrl}?id=${id}&newStateId=${newStateId}&reason=${encodeURIComponent(reason)}`;
+
                         const response = await $.ajax({
-                            url: `/TerminosReferencia/CambiarEstado?id=${id}&newStateId=${newStateId}&reason=${encodeURIComponent(reason)}`,
+                            url: url,
                             type: 'POST',
-                            dataType: 'json' // Asegúrate de que espera una respuesta JSON
+                            dataType: 'json'
                         });
 
                         if (response.success) {
-                            // Usar la URL de redirección proporcionada por el servidor
                             window.location.href = response.redirectUrl;
                             return true;
                         } else {
@@ -538,7 +539,7 @@
                             return false;
                         }
                     } catch (error) {
-                        console.error('Error al cambiar estado:', error);
+                        console.error('Error Front al cambiar estado:', error);
                         showToast('Error', 'No se pudo cambiar el estado del TDR', 'error');
                         return false;
                     }
