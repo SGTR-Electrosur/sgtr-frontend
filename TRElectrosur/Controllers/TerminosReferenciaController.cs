@@ -265,7 +265,7 @@ namespace TRElectrosur.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error al cambiar estado: {ex.Message}");
+                _logger.LogError($"Error Controller al cambiar estado: {ex.Message}");
                 return Json(new { success = false, message = ex.Message });
             }
         }
