@@ -109,19 +109,79 @@ namespace TRElectrosur.Controllers
                 // Obtener todas las versiones de este TDR
                 var versiones = await _apiService.GetAsync<List<TDRVersion>>($"/api/tdrs/{id}/versions", token);
 
-                // Obtener los campos directamente (sin intentar deserializar a tipo dinámico)
+                // En el método Editar del TerminosReferenciaController
                 var fieldsResponseStr = await _apiService.GetStringAsync($"/api/tdrs/{id}/fields", token);
 
-                // Crear el ViewModel
+                // Después de obtener los campos, pero antes de crear el viewModel, ordénalos por Description
+                var fieldsDoc = System.Text.Json.JsonDocument.Parse(fieldsResponseStr);
+                var fieldsArray = fieldsDoc.RootElement.GetProperty("fields");
+
+                // Crear una lista de elementos JsonElement y ordenarlos
+                var fieldsOrdenados = new List<System.Text.Json.JsonElement>();
+                foreach (var field in fieldsArray.EnumerateArray())
+                {
+                    fieldsOrdenados.Add(field);
+                }
+
+                // Ordenar la lista por el campo Description usando un comparador personalizado para jerarquías numéricas
+                fieldsOrdenados = fieldsOrdenados.OrderBy(f => {
+                    var description = f.GetProperty("Description").GetString() ?? "";
+
+                    // Separar por puntos y convertir cada parte a numero
+                    var parts = description.Split('.');
+                    var result = new int[5]; // Soporte hasta 5 niveles de profundidad (puedes ajustar si necesitas más)
+
+                    for (int i = 0; i < parts.Length && i < 5; i++)
+                    {
+                        // Intentar extraer el número de cada parte
+                        if (int.TryParse(parts[i], out int num))
+                            result[i] = num;
+                        else
+                            result[i] = 0;
+                    }
+
+                    // Devolver una tupla que se ordenará por componentes (ordenación lexicográfica)
+                    return (result[0], result[1], result[2], result[3], result[4]);
+                }).ToList();
+
+                // Crear un nuevo JsonDocument con los campos ordenados
+                var jsonOptions = new System.Text.Json.JsonSerializerOptions();
+                using var stream = new System.IO.MemoryStream();
+                using var writer = new System.Text.Json.Utf8JsonWriter(stream);
+
+                writer.WriteStartObject();
+
+                // Escribir la versión tal cual estaba
+                writer.WritePropertyName("version");
+                fieldsDoc.RootElement.GetProperty("version").WriteTo(writer);
+
+                // Escribir los campos ordenados
+                writer.WritePropertyName("fields");
+                writer.WriteStartArray();
+                foreach (var field in fieldsOrdenados)
+                {
+                    field.WriteTo(writer);
+                }
+                writer.WriteEndArray();
+
+                writer.WriteEndObject();
+                writer.Flush();
+
+                // Convertir el stream a string
+                stream.Position = 0;
+                using var reader = new System.IO.StreamReader(stream);
+                var fieldsOrderedStr = reader.ReadToEnd();
+
+                // Crear el ViewModel con los campos ordenados
                 var viewModel = new TDREditViewModel
                 {
                     TDR = tdr,
                     Versiones = versiones ?? new List<TDRVersion>(),
                     VersionActual = tdr.CurrentVersionID ?? 0,
                     IsAdmin = userRoleId == 1,
-                    CanEdit = false,
+                    CanEdit = false,  // Esto se ajustará según lógica existente
                     UserRoleId = userRoleId,
-                    RawFieldsData = fieldsResponseStr // Guardar los datos crudos como string
+                    RawFieldsData = fieldsOrderedStr // Usar los datos ordenados
                 };
 
                 // Determinar qué vista mostrar según el tipo de TDR
