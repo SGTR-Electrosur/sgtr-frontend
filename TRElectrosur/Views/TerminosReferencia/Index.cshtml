@@ -113,9 +113,20 @@
                                         }
                                         else
                                         {
-                                            <a href="@Url.Action("Editar", "TerminosReferencia", new { id = tdr.TDRID })" class="btn btn-sm btn-primary" style="background-color: #2a3c7d; border-color: #2a3c7d;">
-                                                <i class="fas fa-edit"></i> Editar
-                                            </a>
+                                            <div class="btn-group">
+                                                <a href="@Url.Action("Editar", "TerminosReferencia", new { id = tdr.TDRID })" class="btn btn-sm btn-primary" style="background-color: #2a3c7d; border-color: #2a3c7d;">
+                                                    <i class="fas fa-edit"></i> Editar
+                                                </a>
+
+                                                @if (tdr.CurrentStateID == 1 || tdr.CurrentStateID == 3) // Solo para Borrador u Observado
+                                                {
+                                                    <button type="button" class="btn btn-sm btn-outline-primary"
+                                                            onclick="editarNombreTDR(@tdr.TDRID, '@tdr.Title')"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top" title="Editar Nombre">
+                                                        <i class="fas fa-pencil-alt"></i>
+                                                    </button>
+                                                }
+                                            </div>
                                         }
                                     </td>
                                 </tr>
@@ -238,6 +249,36 @@
     </div>
 </div>
 
+
+<!-- Modal para editar nombre de TDR -->
+<div class="modal fade" id="modalEditarNombreTDR" tabindex="-1" aria-labelledby="modalEditarNombreTDRLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #2a3c7d; color: white;">
+                <h5 class="modal-title" id="modalEditarNombreTDRLabel">Editar Nombre del TDR</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditarNombreTDR">
+                    <input type="hidden" id="editTdrId" name="tdrId">
+                    <div class="mb-3">
+                        <label for="editTdrTitle" class="form-label">Nuevo Nombre <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="editTdrTitle" name="title" required maxlength="200">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnGuardarNombreTDR" style="background-color: #2a3c7d; border-color: #2a3c7d;">
+                    <i class="fas fa-save me-1"></i> Guardar Cambios
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 <!-- Estilos personalizados para las tarjetas de selección -->
 <style>
     .tipo-tdr-card {
@@ -296,8 +337,8 @@
             }
         }
 
-                    // Verificar si hay datos en la tabla
-                    var hayDatos = @(Model != null && Model.Any() ? "true" : "false");
+                            // Verificar si hay datos en la tabla
+                            var hayDatos = @(Model != null && Model.Any() ? "true" : "false");
 
             if (hayDatos) {
                 // Inicialización de DataTables solo si hay datos
@@ -428,6 +469,67 @@
                 // Ocultar mensaje de error
                 $('#errorCrearTDR').addClass('d-none');
             });
+
+            // Inicializar tooltips para mejor experiencia de usuario
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            // Manejar la acción de guardar cambios del nombre
+            $('#btnGuardarNombreTDR').on('click', function () {
+                const tdrId = $('#editTdrId').val();
+                const newTitle = $('#editTdrTitle').val().trim();
+
+                if (!newTitle) {
+                    showToast('Error', 'El nombre del TDR no puede estar vacío', 'error');
+                    return;
+                }
+
+                // Cambiar el texto del botón para indicar carga
+                const $btn = $(this);
+                const originalText = $btn.html();
+                $btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...');
+                $btn.prop('disabled', true);
+
+                // Obtener el token de la sesión
+                const token = '@ViewBag.Token';
+
+                // Realizar la petición al API
+                $.ajax({
+                    url: `http://localhost:3000/api/tdrs/${tdrId}`,
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    data: JSON.stringify({ title: newTitle }),
+                    success: function (response) {
+                        // Cerrar modal
+                        $('#modalEditarNombreTDR').modal('hide');
+
+                        // Mostrar mensaje de éxito
+                        showToast('Éxito', 'Nombre del TDR actualizado correctamente', 'success');
+
+                        // Recargar la página después de un breve retraso
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1000);
+                    },
+                    error: function (xhr, status, error) {
+                        // Restaurar botón
+                        $btn.html(originalText);
+                        $btn.prop('disabled', false);
+
+                        // Mostrar mensaje de error
+                        let errorMsg = 'Error al actualizar el nombre del TDR';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMsg = xhr.responseJSON.message;
+                        }
+                        showToast('Error', errorMsg, 'error');
+                    }
+                });
+            });
         });
 
         // Función para mostrar toast
@@ -448,15 +550,15 @@
 
             // Crear el HTML del toast
             const toastHtml = `
-                                        <div id="${toastId}" class="toast align-items-center ${bgClass} text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
-                                            <div class="d-flex">
-                                                <div class="toast-body">
-                                                    <strong>${title}</strong>: ${message}
+                                                <div id="${toastId}" class="toast align-items-center ${bgClass} text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                                                    <div class="d-flex">
+                                                        <div class="toast-body">
+                                                            <strong>${title}</strong>: ${message}
+                                                        </div>
+                                                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                                                    </div>
                                                 </div>
-                                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                                            </div>
-                                        </div>
-                                    `;
+                                            `;
 
             // Añadir el toast al contenedor
             $('#toast-container').append(toastHtml);
@@ -468,9 +570,18 @@
             });
             toast.show();
         }
+
+        // Función para mostrar el modal de edición de nombre
+        function editarNombreTDR(id, title) {
+            // Establecer los valores en el formulario
+            $('#editTdrId').val(id);
+            $('#editTdrTitle').val(title);
+
+            // Mostrar el modal
+            $('#modalEditarNombreTDR').modal('show');
+        }
     </script>
 }
-
                                             <style>
     /* Estilos existentes ... */
     

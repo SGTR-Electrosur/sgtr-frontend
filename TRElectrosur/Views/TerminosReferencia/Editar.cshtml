@@ -371,6 +371,25 @@
                     $('#modalEnviarCorreccion').modal('show');
                 });
 
+                // Botón para abrir el modal de anulación
+                $('#btnAnularTDR').on('click', function () {
+                    $('#modalAnularTDR').modal('show');
+                });
+
+                // Botón de confirmación para anular
+                $('#btnConfirmarAnular').on('click', function () {
+                    const reason = $('#anulacionMotivo').val().trim() || 'TDR anulado por administrador';
+
+                    cambiarEstado(tdrId, 6, reason) // 6 = Anulado
+                        .then(success => {
+                            if (success) {
+                                $('#modalAnularTDR').modal('hide');
+                                showToast('Éxito', 'TDR anulado correctamente', 'success');
+                                setTimeout(() => { location.reload(); }, 1500);
+                            }
+                        });
+                });
+
                 // Botones de confirmación
                 $('#btnConfirmarObservar').on('click', function () {
                     const reason = $('#observacionMotivo').val().trim();
@@ -1229,6 +1248,15 @@
                                 El TDR ha sido anulado. Ya no se pueden realizar modificaciones.
                             </div>
                         }
+
+                    </div>
+                }
+                @if (isAdmin && Model.TDR.CurrentStateID != 6) // Si es admin y el TDR no está ya anulado
+                {
+                    <div class="d-flex gap-2" style="margin-top:10px;">
+                        <button type="button" class="btn btn-danger" id="btnAnularTDR">
+                            <i class="fas fa-ban me-2"></i>Anular TDR
+                        </button>
                     </div>
                 }
             </div>
@@ -1322,3 +1350,25 @@
 </div>
 
 
+<!-- Modal para Anular TDR -->
+<div class="modal fade" id="modalAnularTDR" tabindex="-1" aria-labelledby="modalAnularTDRLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="modalAnularTDRLabel">Anular TDR</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>El TDR será marcado como <strong>Anulado</strong>. Esta acción no puede ser revertida.</p>
+                <p class="text-danger">¿Está seguro que desea continuar?</p>
+                <div class="mb-3" style="display:none;">
+                    <textarea class="form-control" id="anulacionMotivo" rows="3">TDR anulado por administrador</textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="btnConfirmarAnular">Confirmar Anulación</button>
+            </div>
+        </div>
+    </div>
+</div>
